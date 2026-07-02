@@ -71,11 +71,17 @@ Réplica visual do Beacons atual: fundo escuro com foto do bar, logo, verde-lim�
 **#C8D200**, botões arredondados escuros com texto verde-limão. Mobile-first
 (praticamente 100% do tráfego vem da bio do Instagram).
 
-1. **Header** — logo, "O Butiquim - Maringá/PR", ícones sociais (e-mail, TikTok, Instagram, X, Facebook — mesmos destinos de hoje).
+1. **Header** — logo, "O Butiquim - Maringá/PR", ícones sociais com os destinos de hoje:
+   e-mail (âncora `#email` no Beacons → aqui `mailto:envieseumaterial@obutiquim.com.br` ou
+   omitir), TikTok `https://bit.ly/TIKTOKBUTICA`, Instagram `https://instagram.com/obutiquim`,
+   X `https://twitter.com/obutiquim`, Facebook `https://facebook.com/obutiquim`.
 2. **Card #NÃOTEMERRO** — "19 anos criando histórias e colocando a culpa no ar condicionado!".
-3. **Bloco Copa** *(temporário, auto-esconde por data)* — título "JOGOS DA COPA DO MUNDO NO BUTIQUIM!", card do jogo 05/07 Brasil x Noruega → link Ingresso Nacional. Controlado por `visivelDe`/`visivelAte` no config.
+3. **Bloco Copa** *(temporário, auto-esconde por data)* — título "JOGOS DA COPA DO MUNDO NO BUTIQUIM!", subtítulo "Open Bar de Chopp + Vodka + Telão e 03 tvs. Ingressos antecipados!", card do jogo "05/07 Domingo 15h — BRASIL X Noruega - Abrimos 19h30" → `https://www.ingressonacional.com.br/evento/34467/arenaobutiquimoitavasdefinalopenvodkaopenchopp`. Controlado por `visivelDe`/`visivelAte` no config.
 4. **Promoters rotativos** — título tipo "FALE COM UM PROMOTER 👇"; um botão por promoter ativo, abrindo `https://wa.me/{telefone}?text={mensagem com nome}`. Ordem definida pela rotação semanal (abaixo).
-5. **Listas** — LISTA DE SEXTA / SÁBADO / DOMINGO, mesmos destinos e UTMs de hoje (`obutiquim.com.br/{dia}/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign={Dia}Organico`).
+5. **Listas** — LISTA DE SEXTA / SÁBADO / DOMINGO, mesmos destinos e UTMs de hoje:
+   - `https://obutiquim.com.br/sexta-feira/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SextaOrganico`
+   - `https://obutiquim.com.br/sabado/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SabadoOrganico`
+   - `https://www.obutiquim.com.br/domingo/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=DomingoOrganico`
 6. **Reservas de Mesas** — corrigir o typo "Messas" → `https://split.to/ReservasBioButiquim`.
 7. **Seja promoter! Queremos você!** → Google Forms atual (`https://forms.gle/vn1Ypk3VLekEuwCU9`).
 
@@ -109,9 +115,10 @@ perdidos, pixel Meta e contagem de cliques por promoter.
 ## Testes / verificação
 
 - Teste manual com Playwright (mesmo ferramental já usado na sessão): renderizar em
-  viewport mobile, conferir ordem dos promoters em datas simuladas (mock de `Date.now()`
-  via query `?debugData=YYYY-MM-DD` que só altera o cálculo da semana — útil também para
-  conferir a virada de segunda 5h e o auto-esconder do bloco Copa).
+  viewport mobile, conferir ordem dos promoters em datas simuladas. Query
+  `?debugData=YYYY-MM-DD` (aceita também `YYYY-MM-DDTHH:mm` para testar a virada exata
+  de segunda 05:00) substitui o "agora" usado em **ambos** os cálculos: rotação semanal
+  e visibilidade de blocos temporários (Copa).
 - Conferir todos os links de saída (destinos idênticos aos do Beacons, exceto correção do typo).
 - Lighthouse mobile: página deve carregar em < 1s em 4G (estático, sem dependências externas
   além de fontes, se houver).
@@ -123,4 +130,4 @@ perdidos, pixel Meta e contagem de cliques por promoter.
 3. A ordem gira toda segunda 05:00 (-03:00), round-robin, igual para todos os visitantes.
 4. Bloco Copa some sozinho após 06/07/2026 05:00 sem novo deploy.
 5. Todos os demais links levam aos mesmos destinos do Beacons de hoje.
-6. Editar `config.js` + deploy publica mudança em menos de ~2 minutos.
+6. Editar `config.js` + deploy publica mudança em ~1-2 minutos (fluxo igual ao butiquim-lista).
