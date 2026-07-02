@@ -49,6 +49,9 @@ page = await abre('');
 const listas = await page.$$eval('a.botao', (as) => as.map((a) => a.href));
 assert.ok(listas.some((h) => h.includes('obutiquim.com.br/sexta-feira/?utm_source=Instagram')));
 assert.ok(listas.some((h) => h.includes('forms.gle/vn1Ypk3VLekEuwCU9')));
+// links úteis presentes (cardápio + achados e perdidos como amostra)
+assert.ok(listas.some((h) => h.includes('drive.google.com/file/d/1AkwMqIjLH_gcTKWuq96oDVP0RCGZabe8')));
+assert.ok(listas.some((h) => h.includes('api.whatsapp.com/send?phone=554498006859')));
 // reservas de mesas saiu da página (promoters cobrem reserva) — não pode voltar por engano
 assert.ok(!listas.some((h) => h.includes('split.to/ReservasBioButiquim')));
 

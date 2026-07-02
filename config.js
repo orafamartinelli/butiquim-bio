@@ -48,6 +48,16 @@
       { rotulo: 'LISTA DE DOMINGO', sub: 'Garanta seu desconto', url: 'https://www.obutiquim.com.br/domingo/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=DomingoOrganico' },
     ],
 
+    linksUteisTitulo: 'LINKS ÚTEIS 👇',
+    linksUteisSubtitulo: 'Para facilitar sua vida!',
+    linksUteis: [
+      { rotulo: '💼 Trabalhe Conosco', sub: 'Candidate-se aqui', url: 'https://bit.ly/HaVagas-Cadastre-Se', icone: 'star' },
+      { rotulo: 'Cardápio 🍺', sub: '', url: 'https://drive.google.com/file/d/1AkwMqIjLH_gcTKWuq96oDVP0RCGZabe8/view?usp=sharing', icone: 'star' },
+      { rotulo: 'Cardápio de Drinks 🍹', sub: '', url: 'https://drive.google.com/file/d/1rJ-2RU4TsByUunz-JG_6L12d90WC1plU/view?usp=sharing', icone: 'star' },
+      { rotulo: '📍 Nosso Endereço', sub: 'Clique e deixe o GPS te trazer!', url: 'https://goo.gl/maps/244NjK7F7C6eKkhs5', icone: 'star' },
+      { rotulo: 'Achados e Perdidos', sub: '🕔 Atendimento: Seg a Sexta, 9h-12h / 14h-16h', url: 'https://api.whatsapp.com/send?phone=554498006859&text=Ol%C3%A1,%20gostaria%20de%20saber%20sobre%20achados%20e%20perdidos', icone: 'whatsapp' },
+    ],
+
     outros: [
       { rotulo: 'Seja promoter! Queremos você!', sub: '', url: 'https://forms.gle/vn1Ypk3VLekEuwCU9', icone: 'star' },
     ],
