@@ -35,7 +35,7 @@
         visivelAte: '2026-07-06T05:00:00-03:00',
         titulo: 'JOGOS DA COPA DO MUNDO NO BUTIQUIM!',
         subtitulo: 'Open Bar de Chopp + Vodka + Telão e 03 tvs. Ingressos antecipados!',
-        botao: '05/07 Domingo 15h — BRASIL X Noruega · Abrimos 19h30',
+        botao: '05/07 Domingo 15h — BRASIL X Noruega · Compre seu ingresso 🎫',
         url: 'https://www.ingressonacional.com.br/evento/34467/arenaobutiquimoitavasdefinalopenvodkaopenchopp',
       },
     ],
