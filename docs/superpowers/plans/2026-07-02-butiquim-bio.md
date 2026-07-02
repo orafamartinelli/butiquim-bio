@@ -237,7 +237,7 @@ git commit -m "feat: rotação semanal round-robin + visibilidade de blocos (TDD
 
 - [ ] **Step 1: Criar config.js**
 
-Telefones ficam `""` (vazio) até o Rafa passar — promoter sem telefone é tratado como inativo pela renderização (spec). Todos os URLs abaixo vieram do Beacons atual (extraídos em 01/07/2026, listados no spec).
+Telefones reais extraídos do rotador split.to/ReservasBioButiquim em 02/07/2026 (nomes conferidos na mensagem pré-preenchida de cada destino). Todos os URLs abaixo vieram do Beacons atual (extraídos em 01/07/2026, listados no spec).
 
 ```js
 // Butiquim Bio — TODO o conteúdo editável vive aqui.
@@ -259,11 +259,11 @@ Telefones ficam `""` (vazio) até o Rafa passar — promoter sem telefone é tra
 
     // telefone: E.164 sem "+" (ex: "5544984232574"). Vazio = fora da rotação.
     promoters: [
-      { nome: 'Gabriel', telefone: '', ativo: true },
-      { nome: 'Luana Bido', telefone: '', ativo: true },
-      { nome: 'Mari', telefone: '', ativo: true },
-      { nome: 'Maria Julia', telefone: '', ativo: true },
-      { nome: 'Nicolly', telefone: '', ativo: true },
+      { nome: 'Gabriel', telefone: '554491749173', ativo: true },
+      { nome: 'Luana Bido', telefone: '554498766957', ativo: true },
+      { nome: 'Mari', telefone: '554497077075', ativo: true },
+      { nome: 'Maria Julia', telefone: '554498708463', ativo: true },
+      { nome: 'Nicolly', telefone: '554488274796', ativo: true },
     ],
     promotersTitulo: 'FALE COM UM PROMOTER 👇',
     promotersSubtitulo: 'Desconto e lista VIP direto com o time!',
@@ -304,7 +304,7 @@ Expected: `5 3`
 - [ ] **Step 3: Commit**
 
 ```bash
-git add config.js && git commit -m "feat: config.js com conteúdo real do Beacons (telefones pendentes)"
+git add config.js && git commit -m "feat: config.js com conteúdo real do Beacons + telefones dos promoters"
 ```
 
 ---
@@ -552,8 +552,7 @@ Comportamento (spec): renderiza na ordem header → destaque → blocos temporá
 
 - [ ] **Step 2: Conferir manualmente no navegador**
 
-Abrir `index.html?debugData=2026-07-03` — bloco Copa visível; `?debugData=2026-07-07` — Copa some. Console limpo.
-(Promoters ainda invisíveis — telefones vazios. Testar com telefone fake temporário no console se quiser.)
+Abrir `index.html?debugData=2026-07-03` — bloco Copa visível e 5 promoters renderizados; `?debugData=2026-07-07` — Copa some. Console limpo.
 
 - [ ] **Step 3: Commit**
 
@@ -646,12 +645,11 @@ git add test/render.test.mjs && git commit -m "test: renderização end-to-end c
 
 ---
 
-### Task 8: Telefones reais + deploy CF Pages + domínio
+### Task 8: Deploy CF Pages + domínio
 
-**Files:**
-- Modify: `config.js` (telefones)
+**Files:** nenhum novo (telefones já entraram na Task 3)
 
-- [ ] **Step 1: Pedir ao Rafa os 5 telefones** (bloqueante — parar e perguntar). Preencher `config.js`, formato `5544XXXXXXXXX`. Se algum faltar, deixar `""` (fica fora da rotação, ok).
+- [ ] **Step 1: Rodar todos os testes uma última vez** (`node --test test/rotacao.test.mjs` e `node test/render.test.mjs`) — PASS.
 
 - [ ] **Step 2: Criar o projeto no CF Pages e deployar**
 
