@@ -4,7 +4,7 @@
   "scripts": {
     "test": "node --test test/rotacao.test.mjs",
     "test:render": "node test/render.test.mjs",
-    "deploy": "wrangler pages deploy . --project-name=butiquim-bio"
+    "deploy": "npx wrangler pages deploy . --project-name=butiquim-bio"
   },
   "devDependencies": {
     "playwright": "^1.61.1"

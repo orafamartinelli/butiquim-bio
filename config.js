@@ -40,6 +40,8 @@
       },
     ],
 
+    listasTitulo: 'CADASTRE-SE NA LISTA DO DIA 👇',
+    listasSubtitulo: 'Garanta seu desconto!',
     listas: [
       { rotulo: 'LISTA DE SEXTA', sub: 'Garanta seu desconto', url: 'https://obutiquim.com.br/sexta-feira/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SextaOrganico' },
       { rotulo: 'LISTA DE SÁBADO', sub: 'Garanta seu desconto', url: 'https://obutiquim.com.br/sabado/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SabadoOrganico' },

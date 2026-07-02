@@ -1,10 +1,12 @@
 // Butiquim Bio — renderização. Lê CONFIG (config.js) e Rotacao (rotacao.js).
 (function () {
   const raiz = document.getElementById('pagina');
+  const FALLBACK = '<p class="fallback">Ops, algo falhou ao carregar. Fale com a gente: <a href="https://instagram.com/obutiquim">@obutiquim</a></p>';
   if (typeof CONFIG === 'undefined' || typeof Rotacao === 'undefined') {
-    raiz.innerHTML = '<p class="fallback">Ops, algo falhou ao carregar. Fale com a gente: <a href="https://instagram.com/obutiquim">@obutiquim</a></p>';
+    raiz.innerHTML = FALLBACK;
     return;
   }
+  try {
 
   const debug = Rotacao.parseDebugData(new URLSearchParams(location.search).get('debugData'));
   const agora = debug !== null ? debug : Date.now();
@@ -52,9 +54,14 @@
     html += `</section>`;
   }
 
-  html += `<div class="secao-titulo"><div class="mini">CADASTRE-SE NA LISTA DO DIA 👇</div><div class="grande">Garanta seu desconto!</div></div>`;
+  html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.listasTitulo)}</div><div class="grande">${esc(CONFIG.listasSubtitulo)}</div></div>`;
   for (const l of CONFIG.listas) html += botao(l.url, l.rotulo, l.sub, 'star');
   for (const o of CONFIG.outros) html += botao(o.url, o.rotulo, o.sub, o.icone);
 
   raiz.innerHTML = html;
+  } catch (e) {
+    // config.js é editado à mão: se faltar uma chave, mostra o fallback em vez de página em branco.
+    console.error(e);
+    raiz.innerHTML = FALLBACK;
+  }
 })();
