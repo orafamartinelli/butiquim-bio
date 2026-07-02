@@ -48,7 +48,9 @@ assert.equal(await page.locator('.bloco-temp').count(), 0);
 page = await abre('');
 const listas = await page.$$eval('a.botao', (as) => as.map((a) => a.href));
 assert.ok(listas.some((h) => h.includes('obutiquim.com.br/sexta-feira/?utm_source=Instagram')));
-assert.ok(listas.some((h) => h.includes('split.to/ReservasBioButiquim')));
+assert.ok(listas.some((h) => h.includes('forms.gle/vn1Ypk3VLekEuwCU9')));
+// reservas de mesas saiu da página (promoters cobrem reserva) — não pode voltar por engano
+assert.ok(!listas.some((h) => h.includes('split.to/ReservasBioButiquim')));
 
 await browser.close();
 console.log('render.test: OK');

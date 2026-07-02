@@ -24,7 +24,7 @@
       { nome: 'Nicolly', telefone: '554488274796', ativo: true },
     ],
     promotersTitulo: 'FALE COM UM PROMOTER 👇',
-    promotersSubtitulo: 'Desconto e lista VIP direto com o time!',
+    promotersSubtitulo: 'Reserve a sua mesa!',
     mensagemPromoter: 'Oi {nome}! Vim pela bio do Butiquim 🍺',
 
     // Blocos temporários — somem sozinhos fora da janela (datas em -03:00).
@@ -49,7 +49,6 @@
     ],
 
     outros: [
-      { rotulo: 'Reservas de Mesas', sub: 'Clique aqui', url: 'https://split.to/ReservasBioButiquim', icone: 'whatsapp' },
       { rotulo: 'Seja promoter! Queremos você!', sub: '', url: 'https://forms.gle/vn1Ypk3VLekEuwCU9', icone: 'star' },
     ],
   };

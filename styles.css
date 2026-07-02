@@ -1,6 +1,7 @@
 /* Butiquim Bio — réplica do visual Beacons. Marca: verde-limão #C8D200. */
 :root {
   --verde: #c8d200;
+  --verde-escuro: #5c6300; /* versão legível do verde p/ texto em fundo branco */
   --fundo: #0c0c0c;
   --botao: #2b2b2b;
   --texto: #ffffff;
@@ -34,14 +35,14 @@ body {
   border-radius: 20px; padding: 18px 16px; text-align: center; margin: 18px 0;
 }
 .card-destaque .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #1a7f37; margin-bottom: 6px; }
-.card-destaque p { font-size: 16px; color: var(--verde); -webkit-text-stroke: 0.4px #666; font-weight: 700; }
+.card-destaque p { font-size: 16px; color: var(--verde-escuro); font-weight: 700; }
 
 .secao-titulo {
   border: 2px solid var(--verde); border-radius: 20px; background: rgba(255,255,255,0.96);
   text-align: center; padding: 14px 16px; margin: 26px 0 14px;
 }
 .secao-titulo .mini { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: #333; }
-.secao-titulo .grande { font-size: 18px; font-weight: 700; color: var(--verde); -webkit-text-stroke: 0.3px #666; margin-top: 4px; }
+.secao-titulo .grande { font-size: 18px; font-weight: 700; color: var(--verde-escuro); margin-top: 4px; }
 
 .botao {
   display: flex; align-items: center; gap: 12px;
@@ -62,7 +63,7 @@ body {
   text-align: center; padding: 16px; margin: 22px 0;
 }
 .bloco-temp .mini { font-size: 11px; font-weight: 800; letter-spacing: 1px; color: #222; }
-.bloco-temp .sub { font-size: 15px; font-weight: 700; color: var(--verde); -webkit-text-stroke: 0.3px #666; margin: 8px 0 12px; }
+.bloco-temp .sub { font-size: 15px; font-weight: 700; color: var(--verde-escuro); margin: 8px 0 12px; }
 .bloco-temp .botao { background: #171717; }
 
 .fallback { text-align: center; padding: 40px 20px; }
