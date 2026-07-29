@@ -44,6 +44,26 @@ test('lista vazia retorna []', () => {
   assert.deepEqual(ordemRotacao([], t('2026-01-12T12:00:00-03:00')), []);
 });
 
+test('fixoNoFinal fica sempre por último, fora do giro', () => {
+  const lista = [P('A'), P('B'), P('C'), { ...P('Z'), fixoNoFinal: true }];
+  const sem0 = t('2026-01-05T12:00:00-03:00');
+  const sem1 = t('2026-01-12T12:00:00-03:00');
+  const sem2 = t('2026-01-19T12:00:00-03:00');
+  assert.deepEqual(ordemRotacao(lista, sem0).map((p) => p.nome), ['A', 'B', 'C', 'Z']);
+  assert.deepEqual(ordemRotacao(lista, sem1).map((p) => p.nome), ['B', 'C', 'A', 'Z']);
+  assert.deepEqual(ordemRotacao(lista, sem2).map((p) => p.nome), ['C', 'A', 'B', 'Z']);
+});
+
+test('só fixos: retorna os fixos na ordem do config', () => {
+  const lista = [{ ...P('Z'), fixoNoFinal: true }, { ...P('W'), fixoNoFinal: true }];
+  assert.deepEqual(ordemRotacao(lista, t('2026-01-12T12:00:00-03:00')).map((p) => p.nome), ['Z', 'W']);
+});
+
+test('fixoNoFinal inativo não aparece', () => {
+  const lista = [P('A'), P('B'), { ...P('Z', false), fixoNoFinal: true }];
+  assert.deepEqual(ordemRotacao(lista, t('2026-01-05T12:00:00-03:00')).map((p) => p.nome), ['A', 'B']);
+});
+
 test('data antes da época não quebra (offset sempre 0..k-1)', () => {
   const ordem = ordemRotacao(cinco, t('2025-12-29T12:00:00-03:00')); // semana -1
   assert.deepEqual(ordem.map((p) => p.nome), ['E', 'A', 'B', 'C', 'D']);

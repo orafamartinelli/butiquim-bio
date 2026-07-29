@@ -24,19 +24,19 @@ async function abre(query) {
   return page;
 }
 
-// semana 0 (época 05/01/2026): ordem original
+// semana 0 (época 05/01/2026): meninas na ordem do config, Gabriel fixo no fim
 let page = await abre('?debugData=2026-01-05T05:00');
 let nomes = await page.$$eval('#promoters .rotulo', (els) => els.map((e) => e.textContent));
-assert.deepEqual(nomes, ['Gabriel', 'Luana Bido', 'Mari', 'Maria Julia', 'Nicolly']);
+assert.deepEqual(nomes, ['Luana Bido', 'Mari', 'Maria Julia', 'Gabriel']);
 
-// semana seguinte: gira 1
+// semana seguinte: meninas giram 1, Gabriel continua no fim
 page = await abre('?debugData=2026-01-12T05:00');
 nomes = await page.$$eval('#promoters .rotulo', (els) => els.map((e) => e.textContent));
-assert.deepEqual(nomes, ['Luana Bido', 'Mari', 'Maria Julia', 'Nicolly', 'Gabriel']);
+assert.deepEqual(nomes, ['Mari', 'Maria Julia', 'Luana Bido', 'Gabriel']);
 
-// wa.me com mensagem e primeiro nome
+// wa.me com mensagem e primeiro nome (Mari é índice 1 no config)
 const href = await page.$eval('#promoters a', (a) => a.href);
-assert.match(href, /^https:\/\/wa\.me\/554400000001\?text=Oi%20Luana!/);
+assert.match(href, /^https:\/\/wa\.me\/554400000001\?text=Oi%20Mari!/);
 
 // bloco copa: visível dentro da janela, some depois
 page = await abre('?debugData=2026-07-03');
@@ -52,8 +52,13 @@ assert.ok(listas.some((h) => h.includes('forms.gle/vn1Ypk3VLekEuwCU9')));
 // links úteis presentes (cardápio + achados e perdidos como amostra)
 assert.ok(listas.some((h) => h.includes('drive.google.com/file/d/1AkwMqIjLH_gcTKWuq96oDVP0RCGZabe8')));
 assert.ok(listas.some((h) => h.includes('api.whatsapp.com/send?phone=554498006859')));
+// botão de avaliação Google presente
+assert.ok(listas.some((h) => h.includes('bit.ly/AVALIACAOGOOGLE')));
 // reservas de mesas saiu da página (promoters cobrem reserva) — não pode voltar por engano
 assert.ok(!listas.some((h) => h.includes('split.to/ReservasBioButiquim')));
+// Nicolly saiu da rotação — não pode voltar por engano
+const nomesFinais = await page.$$eval('#promoters .rotulo', (els) => els.map((e) => e.textContent));
+assert.ok(!nomesFinais.includes('Nicolly'));
 
 await browser.close();
 console.log('render.test: OK');

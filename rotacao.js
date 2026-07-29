@@ -15,10 +15,12 @@
 
   function ordemRotacao(promoters, agoraMs) {
     const ativos = promoters.filter((p) => p.ativo);
-    const k = ativos.length;
-    if (k === 0) return [];
+    const giram = ativos.filter((p) => !p.fixoNoFinal);
+    const fixos = ativos.filter((p) => p.fixoNoFinal);
+    const k = giram.length;
+    if (k === 0) return fixos;
     const offset = ((numeroSemana(agoraMs) % k) + k) % k;
-    return ativos.map((_, i) => ativos[(offset + i) % k]);
+    return giram.map((_, i) => giram[(offset + i) % k]).concat(fixos);
   }
 
   function blocoVisivel(bloco, agoraMs) {

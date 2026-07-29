@@ -55,7 +55,9 @@
   }
 
   html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.listasTitulo)}</div><div class="grande">${esc(CONFIG.listasSubtitulo)}</div></div>`;
+  html += `<div class="grupo-listas">`;
   for (const l of CONFIG.listas) html += botao(l.url, l.rotulo, l.sub, 'star');
+  html += `</div>`;
 
   html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.linksUteisTitulo)}</div><div class="grande">${esc(CONFIG.linksUteisSubtitulo)}</div></div>`;
   for (const u of CONFIG.linksUteis) html += botao(u.url, u.rotulo, u.sub, u.icone);
