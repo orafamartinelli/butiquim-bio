@@ -59,12 +59,52 @@
   for (const l of CONFIG.listas) html += botao(l.url, l.rotulo, l.sub, 'star');
   html += `</div>`;
 
+  const fotos = CONFIG.carrossel || [];
+  if (fotos.length) {
+    html += `<div class="secao-titulo secao-titulo--carrossel"><div class="mini">${esc(CONFIG.carrosselTitulo || 'FOTOS')}</div><div class="grande">${esc(CONFIG.carrosselSubtitulo || '')}</div></div>`;
+    html += `<div class="carrossel-fotos" id="carrossel-fotos"><div class="carrossel-track" id="carrossel-track"></div></div>`;
+  }
+
   html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.linksUteisTitulo)}</div><div class="grande">${esc(CONFIG.linksUteisSubtitulo)}</div></div>`;
   for (const u of CONFIG.linksUteis) html += botao(u.url, u.rotulo, u.sub, u.icone);
 
   for (const o of CONFIG.outros) html += botao(o.url, o.rotulo, o.sub, o.icone);
 
   raiz.innerHTML = html;
+
+  // Carrossel roda sozinho (CSS animation), sem fim — dobra a lista pra fazer o loop
+  // ficar contínuo (na metade do percurso já é a mesma foto de novo, sem soluço).
+  // Respeita prefers-reduced-motion: sem duplicar e sem animação, vira rolagem manual.
+  if (fotos.length) {
+    const track = document.getElementById('carrossel-track');
+    const itemHtml = (f, i) => `<div class="carrossel-item"><img src="${esc(f.img)}" alt="${esc(f.legenda || 'Foto ' + (i + 1) + ' — O Butiquim')}" loading="lazy" /></div>`;
+    const reduzMovimento = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduzMovimento) {
+      track.innerHTML = fotos.map(itemHtml).join('');
+      document.getElementById('carrossel-fotos').classList.add('estatico');
+    } else {
+      track.innerHTML = fotos.map(itemHtml).join('') + fotos.map(itemHtml).join('');
+      track.style.animationDuration = Math.max(13, fotos.length * 2.8) + 's';
+    }
+
+    // "#NãoTemErro!" escreve sozinho quando entra na tela (loop depois disso).
+    // IMPORTANTE: observa o CONTÊINER (sem clip-path), não o próprio texto — o texto
+    // nasce 100% cortado (clip-path) pra animação, e um alvo com área visível zero
+    // nunca reporta interseção em alguns navegadores (bug real: sumia no desktop).
+    const tituloWrap = document.querySelector('.secao-titulo--carrossel');
+    const tituloCarrossel = tituloWrap ? tituloWrap.querySelector('.grande') : null;
+    if (tituloWrap && tituloCarrossel && !reduzMovimento) {
+      const obsTitulo = new IntersectionObserver((entradas) => {
+        entradas.forEach((e) => {
+          if (e.isIntersecting) {
+            tituloCarrossel.classList.add('escrever');
+            obsTitulo.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      obsTitulo.observe(tituloWrap);
+    }
+  }
   } catch (e) {
     // config.js é editado à mão: se faltar uma chave, mostra o fallback em vez de página em branco.
     console.error(e);

@@ -21,6 +21,7 @@
       { nome: 'Luana Bido', telefone: '554498766957', ativo: true },
       { nome: 'Mari', telefone: '554497077075', ativo: true },
       { nome: 'Maria Julia', telefone: '554498708463', ativo: true },
+      { nome: 'Medina', telefone: '554491055861', ativo: true },
       { nome: 'Gabriel', telefone: '554491749173', ativo: true, fixoNoFinal: true },
     ],
     promotersTitulo: 'FALE COM UM PROMOTER 👇',
@@ -29,6 +30,20 @@
 
     // Blocos temporários — somem sozinhos fora da janela (datas em -03:00).
     blocosTemporarios: [
+      {
+        // 🎂 PROMO ANIVERSARIANTE — OCULTO até validar (pedido Rafa 02/08).
+        // PARA ATIVAR: troque visivelDe pra data de hoje. O texto do botão abre o
+        // WhatsApp oficial com a frase-gatilho EXATA que dispara o fluxo do niver
+        // no NicoChat (keyword f71825k518215) — não mude a frase do text= sem
+        // mudar a keyword junto.
+        id: 'aniversariante',
+        visivelDe: '2026-08-03T00:00:00-03:00',
+        visivelAte: '2026-12-31T23:59:00-03:00',
+        titulo: 'ANIVERSARIANTE DO MÊS? 🎂',
+        subtitulo: 'Kit garantido + brindes pela sua turma. Vale o mês inteiro!',
+        botao: 'QUERO MINHA PROMO 🎁',
+        url: 'https://wa.me/554431424595?text=Quero%20minha%20promo%20de%20aniversariante%20%F0%9F%8E%82',
+      },
       {
         id: 'copa',
         visivelDe: '2026-06-30T00:00:00-03:00',
@@ -46,6 +61,27 @@
       { rotulo: 'LISTA DE SEXTA', sub: 'Garanta seu desconto', url: 'https://obutiquim.com.br/sexta-feira/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SextaOrganico' },
       { rotulo: 'LISTA DE SÁBADO', sub: 'Garanta seu desconto', url: 'https://obutiquim.com.br/sabado/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SabadoOrganico' },
       { rotulo: 'LISTA DE DOMINGO', sub: 'Garanta seu desconto', url: 'https://www.obutiquim.com.br/domingo/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=DomingoOrganico' },
+    ],
+
+    // Carrossel de fotos — rola sozinho, sem fim, logo abaixo das listas (pedido do
+    // Rafa 30/07). Pra trocar/adicionar fotos: solte o arquivo em assets/carrossel/
+    // e adicione a linha aqui (`legenda` é opcional).
+    carrosselTitulo: 'BASTIDORES 📸',
+    carrosselSubtitulo: '#NãoTemErro!',
+    carrossel: [
+      { img: 'assets/carrossel/1.jpg' },
+      { img: 'assets/carrossel/2.jpg' },
+      { img: 'assets/carrossel/3.jpg' },
+      { img: 'assets/carrossel/4.jpg' },
+      { img: 'assets/carrossel/5.jpg' },
+      { img: 'assets/carrossel/6.jpg' },
+      { img: 'assets/carrossel/7.jpg' },
+      { img: 'assets/carrossel/8.jpg' },
+      { img: 'assets/carrossel/9.jpg' },
+      { img: 'assets/carrossel/10.jpg' },
+      { img: 'assets/carrossel/11.jpg' },
+      { img: 'assets/carrossel/12.jpg' },
+      { img: 'assets/carrossel/13.jpg' },
     ],
 
     linksUteisTitulo: 'LINKS ÚTEIS 👇',
