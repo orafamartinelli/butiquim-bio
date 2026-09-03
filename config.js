@@ -33,16 +33,16 @@
       {
         // 🎂 PROMO ANIVERSARIANTE — OCULTO até validar (pedido Rafa 02/08).
         // PARA ATIVAR: troque visivelDe pra data de hoje. O texto do botão abre o
-        // WhatsApp oficial com a frase-gatilho EXATA que dispara o fluxo do niver
-        // no NicoChat (keyword f71825k518215) — não mude a frase do text= sem
-        // mudar a keyword junto.
+        // WhatsApp oficial 0906 (Prontto.AI, Kim v2) com a frase de contexto do niver.
+        // Trocado de 3142-4595 (NicoChat) pra 3170-0906 em 03/09/2026; a Kim v2
+        // entende a frase por contexto, sem keyword.
         id: 'aniversariante',
         visivelDe: '2026-08-03T00:00:00-03:00',
         visivelAte: '2026-12-31T23:59:00-03:00',
         titulo: 'ANIVERSARIANTE DO MÊS? 🎂',
         subtitulo: 'Kit garantido + brindes pela sua turma. Vale o mês inteiro!',
         botao: 'QUERO MINHA PROMO 🎁',
-        url: 'https://wa.me/554431424595?text=Quero%20minha%20promo%20de%20aniversariante%20%F0%9F%8E%82',
+        url: 'https://wa.me/554431700906?text=Quero%20minha%20promo%20de%20aniversariante%20%F0%9F%8E%82',
       },
       {
         id: 'copa',
