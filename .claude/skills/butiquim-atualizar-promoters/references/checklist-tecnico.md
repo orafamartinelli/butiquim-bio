@@ -1,149 +1,232 @@
-# Checklist técnico — onde um promoter existe (mapeado 29/07/2026)
+# Checklist técnico — onde um promoter existe (reverificado 16/09/2026)
 
-## IDs fixos que você vai precisar
+> Tudo aqui foi conferido no código/banco em 16/09/2026. O NicoChat (fluxos
+> `f71825...`, bot fields, randomizers, cadeia de UTM, `agent_id 1635`) **não
+> existe mais** — desligado em 06/09/2026, conta encerrada. Atendimento e
+> disparos = **Prontto.AI**, WhatsApp Cloud API oficial, **+55 44 3170-0906**,
+> agente **Kim**.
 
-- **NicoChat:** workspace_id `61425` ("O Butiquim"), canal `flow_ns` `f71825`.
-- **Fluxo principal de roteamento:** `f71825s2046453` ("API - ✅📋 Confirmação
-  de cadastro na Lista") — é aqui que vive a cadeia de UTM, os nós "Cliente
-  Mesa - X" e o randomizer orgânico.
-- **Fluxo de aniversário (randomizer separado):** `f71825s2046573` ("1. 🎈
-  Niver - Fluxo Central").
-- **Fluxo legado/morto, NÃO MEXER:** `f71825s2046457` ("API - Avisar
-  Promoter - Interessado Reserva") — confirmado pelo Rafa em 29/07 que está
-  desativado (foi embutido em outro fluxo).
-- **Agente Kim:** `agent_id 1635`, `ai_agent_ns f71825ag1573`, mesmo canal.
-- **Grupo WhatsApp "Novos Promoters - TIME BUTICA":**
-  `120363425359400605-group` — recebe o aviso "Cliente Precisando de Mesa"
-  (nó `f71825n450796947`, POST Z-API `send-text` com array `mentioned`).
-- **Grupo "ADM e GERÊNCIA - O Butiquim":** `120363291237972375-group` — só
-  gestão, promoter comum não entra aqui.
-- **Grupos de mesa (hub_reservas, um por dia):** sexta
-  `120363420401970586-group`, sábado `120363420199715359-group`, domingo
-  `554484232574-1574289883`, quinta-teste `120363408788096065-group`.
-- **Supabase projeto:** `ibpxoytlngnxlimxbxzg`. Tabela `hub_grupo_remetentes`
-  (colunas `estab_id`, `telefone`, `nome`); `estab_id` do Butiquim =
-  `8f249842-cede-42f1-9e49-3e9324f7d8aa`.
-- **Bio:** repo `Documents/projetos/butiquim-bio`, arquivo `config.js`,
-  array `promoters`. Deploy = `npm run deploy` (wrangler; renovar oauth
-  token antes — ver `[[reference_cloudflare]]`).
-- **Template WhatsApp usado no aviso ao promoter:**
-  `aviso_promoter_cliente_quer_mesa_butica` (`wa_uid`
-  `9df640e15d141cccebe1d3e914db7de2`, `namespace`
-  `08247182_6e5d_4856_b887_19742cf77062`, `lang pt_BR`) — params
-  `BODY_{{1}}`=nome do cliente, `BODY_{{2}}`=telefone do cliente.
+## IDs e caminhos fixos
 
-## Os 3 formatos de telefone (não confundir)
+| Item | Valor |
+|---|---|
+| Repo da bio | `C:\Users\User\Documents\projetos\butiquim-bio` (`config.js`, `rotacao.js`) |
+| CF Pages da bio | projeto `butiquim-bio`, servido em `https://obutiquim.com.br/bio/` via Worker `butiquim-bio-proxy` |
+| Cloudflare account_id | `57200dd7ed7c5dfbbd795fdf1956bd36` |
+| Repo da lista | `C:\Users\User\Documents\projetos\butiquim-lista` |
+| CF Pages da lista | projeto `butiquim-lista` (`lista.obutiquim.com.br`, embedado no site) |
+| Repo do site | `C:\Users\User\Documents\projetos\butiquim-site` (páginas dos dias + iframe da lista) |
+| Supabase | projeto `ibpxoytlngnxlimxbxzg` (usar SEMPRE o MCP `claude.ai Supabase`) |
+| `estab_id` do Butiquim | `8f249842-cede-42f1-9e49-3e9324f7d8aa` |
+| Grupo "Novos Promoters - TIME BUTICA" | `120363425359400605-group` (também em `butiquim_social_config.grupo_promoters_producao`) |
+| Grupo "🏆 Placar Promoters" | `120363430010372152-group` (`butiquim_social_config.grupo_disputa`) |
+| Grupos de reserva de mesa | sexta `120363420401970586-group` · sábado `120363420199715359-group` · domingo `554484232574-1574289883` · quinta `120363408788096065-group` |
+| Grupo "ADM e GERÊNCIA" | `120363291237972375-group` — **gestão; promoter não entra** |
+| Prontto (conta de disparo) | "O Butiquim - Atendimento" `70c7a5b1-e33b-46dc-9868-eec4e2dd0393`, WABA `1599027091586241` |
 
-Dado um número real, ex. `+55 44 9773-8953`:
-1. **Bot field / botão WhatsApp / `to_number` do template** (NicoChat):
-   `4497738953` — DDD + 8 dígitos, SEM "55", SEM "+".
-2. **`config.js` da bio / `hub_grupo_remetentes`**: `554497738953` — "55" +
-   DDD + 8 dígitos, sem "+" (isso é o "SEM 9º dígito" que a memória antiga
-   menciona — na prática é só que o número de 8 dígitos já é o que existe,
-   não tem um 9 extra prefixado).
-3. **Array `mentioned` do aviso de grupo** (Z-API): CADA pessoa entra em
-   **2 formatos** — com um "9" extra inserido (`554499...` → 13 dígitos,
-   ex. `5544991749173`) E sem (`554491749173`, 12 dígitos) — pra cobrir os
-   2 jeitos que o WhatsApp pode ter salvo o contato. Só mexer aqui na
-   Fase 2 (ativação).
+## Os formatos de telefone (não confundir)
 
-## PEGADINHA BLOQUEANTE — nó de notificação ao promoter não é criável via API
+Dado `+55 44 9105-5861`:
 
-Os nós existentes "Cliente Mesa - {Nome}" (ação) mandam o template pro
-promoter via um step de ação `type:"whatsapp_template"`. Esse kind **NÃO
-está na lista de kinds aceitos por `subflow_node_create`/`subflow_node_edit`**
-(confirmado 29/07 — erro explícito lista todos os kinds suportados e
-`whatsapp_template` não está lá; só sobrevive em nós antigos, criados antes
-dessa validação existir ou por outro caminho). **Não dá pra criar esse nó
-específico via MCP.**
+1. **`config.js` da bio e `hub_grupo_remetentes`** → `554491055861`
+   (55 + DDD + 8 dígitos, sem "+", sem 9º dígito). É como o webhook da Z-API
+   entrega o remetente do grupo; o join do Hub normaliza os dígitos dos 2 lados.
+2. **MCP Z-API (`group-add-participant` / `send-text`)** → só dígitos, DDI+DDD+
+   número, sem máscara. Use a mesma grafia do item 1; se o participante não
+   entrar, tente a variante com o 9 (`5544991055861`).
+3. **Prontto / Cloud API** → `phoneComDDI()` do `_worker.js`: 10/11 dígitos
+   ganham `55` na frente; 12/13 dígitos que já começam com `55` passam direto.
+   Você não monta isso na mão nesta skill.
 
-**Contorno:** o nó de MENSAGEM (texto + botão "WhatsApp Aqui", que é o que
-o CLIENTE vê e usa pra chamar o promoter) funciona normal via API — só o
-nó de AÇÃO que avisa automaticamente o promoter é que fica de fora.
+## 1. Bio — `butiquim-bio/config.js`
 
-**Passo manual pro Rafa (ou pra você, se ele topar operar o editor visual):**
-No editor do NicoChat, abrir o fluxo "API - ✅📋 Confirmação de cadastro na
-Lista", localizar um nó de ação existente tipo "Cliente Mesa - Luana",
-**duplicar**, e no duplicado trocar:
-- Nome do nó → "Cliente Mesa - {Nome novo}"
-- `to_number` → `+55{{Promoter {Nome novo}}}` (a variável do bot field
-  criado na Fase 1 — já existe, só selecionar no seletor de variável)
-- Deixar o resto do template igual (nome/idioma/namespace são os mesmos
-  pra todos)
-- Adicionar um step `add_note` com texto "Recebeu contato: Promoter
-  {Nome novo}" (opcional, mas os outros têm)
-- Ligar a saída do nó de MENSAGEM (feito via API) → nesse nó novo → nó
-  compartilhado "Aviso - Rafa" (`f71825n292434339`)
-
-## Cadeia de condições UTM (fluxo `f71825s2046453`)
-
-Nós, em ordem (cada um testa se `f71825v13414821` [utm_source] contém um
-texto; se não bate, cai no próximo; a ORDEM importa — nome que é substring
-de outro tem que vir DEPOIS do mais específico, ex. "julia" antes de "mari"
-porque "mariajulia" contém "mari"):
-
-```
-n451206611 (contém "julia"?)  → Maria Julia | senão↓
-n451206613 (contém "gabriel"?) → Gabriel     | senão↓
-n451206615 (contém "luana"?)   → Luana       | senão↓
-n451206617 (contém "mari"?)    → Mari        | senão↓
-n451206619 (contém "nicolly"?) → (fallback — ela saiu do time) | senão↓
-n451335401 (link de auto-atendimento? "casa") → randomizer orgânico (n450796085)
+```js
+promoters: [
+  { nome: 'Luana Bido',  telefone: '554498766957', ativo: true },
+  { nome: 'Mari',        telefone: '554497077075', ativo: true },
+  { nome: 'Maria Julia', telefone: '554498708463', ativo: true },
+  { nome: 'Medina',      telefone: '554491055861', ativo: true },
+  { nome: 'Gabriel',     telefone: '554491749173', ativo: true, fixoNoFinal: true },
+],
 ```
 
-Promoter novo com link próprio = inserir uma condição nova ENTRE
-`n451206619` e `n451335401` (ou em qualquer ponto antes do fallback — não
-há colisão de substring conhecida com "aiko"/"medina"), testando
-`utm_source contains "<nome>"`, apontando pro nó de MENSAGEM dele.
-Rewire o "senão"/`next_node_ns` default do nó anterior da cadeia pra
-apontar pra condição nova, e a condição nova aponta pro próximo — **usar
-`subflow_node_edit` direto no campo `next_node_ns`/`conditions[].next_node_ns`,
-NUNCA `subflow_connection_create`/`delete` numa condição — isso apaga os
-grupos da condição (`conditions:[]`) e quebra o nó.**
+- `ativo:false` ou telefone vazio = fora da rotação.
+- `fixoNoFinal:true` = fora do giro, sempre no fim da lista.
+- O giro é calculado em `rotacao.js` (`ordemRotacao`): round-robin semanal com
+  virada **segunda 05:00 -03:00** (época `2026-01-05T05:00:00-03:00`).
+  **Não precisa editar `rotacao.js`** pra entrar/sair promoter — ele lê o array.
+- Debug sem esperar a semana virar: `?debugData=YYYY-MM-DD[THH:mm]`.
+- Testes: `npm test` (rotação) e `npm run test:render` (Playwright).
 
-## Randomizer orgânico (`f71825n450796085`, dentro do mesmo fluxo)
+**Deploy** (`package.json` → `npx wrangler pages deploy . --project-name=butiquim-bio`):
 
-Hoje: Luana 35% / Mari 34% / Maria Julia 25% (variantes somam ~94, tem
-folga de arredondamento). Gabriel NÃO participa (só recebe por link
-próprio). Pra adicionar variante: **não dá pra editar o nó existente pra
-ganhar variante nova** (`subflow_node_edit` num randomizer só
-preserva/remove as que já tem) — criar um randomizer NOVO via
-`subflow_node_create` com todas as variantes (as antigas + as novas,
-pesos recalculados) e religar todo mundo que apontava pro randomizer
-antigo (a condição `n451335401`) pro novo.
+```powershell
+cd C:\Users\User\Documents\projetos\butiquim-bio
+$env:CLOUDFLARE_ACCOUNT_ID = "57200dd7ed7c5dfbbd795fdf1956bd36"
+$env:CLOUDFLARE_API_TOKEN  = (node C:\Users\User\Documents\projetos\butiquim-lista\renova-token.mjs)
+npm run deploy
+```
 
-## Randomizer do fluxo de aniversário (`f71825s2046573`)
+(Alternativa: o token Pages:Edit de `.credentials\cloudflare-api-token.json`.)
+Conferir no ar: `https://obutiquim.com.br/bio/` **com barra final**.
 
-Nó `f71825n451468629` (recriado em 27/07 quando a Nicolly saiu). Hoje:
-Gabriel 10% / Luana-Mari-MariaJulia 30% cada. Mesma pegadinha do item
-acima (recriar, não editar). **Independente** do randomizer do item
-anterior — se o promoter novo deve receber leads de aniversário também,
-precisa entrar nos DOIS randomizers separadamente.
+⚠️ **Armadilha histórica:** existe uma cópia duplicada e desatualizada da bio em
+`butiquim-site/site/bio/`. O Worker `butiquim-bio-proxy` força `/bio*` a vir do
+Pages `butiquim-bio`, então a cópia é código morto — mas se alguém remover o
+proxy, ela volta a aparecer. Nunca edite os dois; edite o repo `butiquim-bio`.
 
-## Prompt da Kim
+## 2 e 3. Lista — `PROMOTERS_OFICIAIS` (DUPLICADA, manter igual)
 
-`ai_agent_get(flow_ns:"f71825", workspace_id:"61425", agent_id:1635)` pra
-achar onde a lista de "promoters oficiais" está hoje (campo `roles` ou
-`information` — mudou de lugar quando a Nicolly foi removida em 27/07,
-conferir antes de assumir). Editar com `ai_agent_update` usando
-`patch_ops` (find→replace) pra não reenviar o campo inteiro.
+```js
+const PROMOTERS_OFICIAIS = new Set(['gabriel','luana','luanabido','mari','mariajulia','medina']);
+```
 
-## Fluxos ainda não lidos em detalhe (conferir se for relevante)
+- `butiquim-lista/_worker.js` ~linha 23 → usada por `normalizaPromoter()`:
+  `utm_source` que não bate EXATO vira **`'Casa'`** no banco/ranking.
+- `butiquim-lista/listasbutiquim/conferencia/index.html` ~linha 255 → mesma
+  constante, usada por `normPromoter()` no fechamento de comissão.
+- Já ficaram dessincronizadas (03/08/2026): o Medina existia num arquivo e não
+  no outro, e o cadastro dele virava "Casa" no cálculo — ou seja, sem comissão.
+  **Editar os dois no mesmo commit.**
+- Quem é quem (confirmado pelo telefone da bio): `mari` = Mariana Zalasko
+  (@m.zalasko) · `mariajulia` = Maria Julia (@mari_juu_l) · `luanabido` = Luana
+  Bido · `medina` = @edaimedina · `gabriel` = @gabrieellgoncalves.
+- `gabriel` permanece na lista mesmo fora do giro: ele não recebe distribuição
+  da casa, só o que traz por esforço próprio.
 
-- "Patrocinado - Direcionando para Promoters" (`f71825s578773`) e as 4
-  variantes por dia ("Patrocinado - Sexta/Sábado/Domingo/Quinta",
-  `f71825s654885`/`654973`/`677859`/`986201`) — prováveis rotas de lead de
-  anúncio pago pra promoter específico.
-- Dentro do próprio fluxo principal, nó `f71825n450795997` tem um esquema
-  ALTERNATIVO de "promoter do dia fixo" (Quinta→Victor, Sexta→Gabriel,
-  Sábado→Victinho, Domingo→Victor) — não é o mesmo mecanismo do UTM/
-  randomizer. Só relevante se o promoter novo cobre um dia fixo.
-- "Totalizador em Looping - Promoters" (`f71825s2046567`) — provável
-  contador/ranking; conferir se tem lista fixa de nomes.
+**Deploy:**
 
-## Grupos de mesa do hub_reservas — comandos que o promoter usa
+```powershell
+cd C:\Users\User\Documents\projetos\butiquim-lista
+$env:CLOUDFLARE_API_TOKEN = (node renova-token.mjs)
+node deploy-lista.mjs
+```
 
-`Número - Nome` (reserva) e `Número - cancelar` (cancela — só cancela
-reserva de origem `promoter`, reserva de cliente é protegida a menos que
-quem mandar seja um admin listado em `GRUPO_ADMIN_TELEFONES`). Ver
-`[[project_hub_reservas_mesas]]` pro funcionamento completo.
+🚨 **NUNCA `wrangler pages deploy .` neste repo.** O `.assetsignore` não vale no
+Pages e o comando publica a pasta inteira (incidente 22/07/2026: `.dev.vars`
+ficou público). `deploy-lista.mjs` copia só `_worker.js`, `_routes.json`,
+`niver.mjs`, as 6 pastas de dia e `listasbutiquim/` pra uma pasta temporária e
+deploya de lá.
+
+## 4. Grupos de WhatsApp (MCP `claude.ai MCP z-api`)
+
+```
+group-add-participant    { groupId, phones: ["554491055861"], autoInvite: true }
+group-remove-participant { groupId, phones: ["554491055861"] }
+group-metadata           { groupId }   ← sempre conferir depois
+```
+
+Instância = a do Rafa (é o bot que posta os mapas). Saúde da instância:
+`session: true` (só `connected: true` não basta).
+
+## 5. Hub Reservas — `hub_grupo_remetentes`
+
+Criada na migration `0051_grupo_remetentes_e_reservado_por.sql`:
+
+```sql
+create table if not exists hub_grupo_remetentes (
+  estab_id uuid not null references hub_estabelecimentos(id) on delete cascade,
+  telefone text not null,          -- dígitos (o join normaliza os 2 lados)
+  nome     text not null,
+  primary key (estab_id, telefone)
+);
+```
+
+- RLS ligado. Policy de leitura `grupo_remetentes_sel` (migration `0052`) só pro
+  gerente do próprio estabelecimento; escrita = service_role (o MCP Supabase já é).
+- Usada pela RPC `get_mapa_mesas_grupo` → `reservado_por`. No grupo aparece como
+  **iniciais** (`35 - Cliente A - LB`); no painel, como **primeiro nome** na
+  coluna "Por".
+- Sem a linha, o promoter **ainda consegue lançar mesa** pelo grupo — só sai sem
+  identificação.
+
+Inserir / atualizar:
+
+```sql
+insert into hub_grupo_remetentes (estab_id, telefone, nome)
+values ('8f249842-cede-42f1-9e49-3e9324f7d8aa', '5544XXXXXXXX', 'Fulano')
+on conflict (estab_id, telefone) do update set nome = excluded.nome;
+```
+
+Remover (só se a pessoa nunca operou):
+
+```sql
+delete from hub_grupo_remetentes
+where estab_id = '8f249842-cede-42f1-9e49-3e9324f7d8aa' and telefone = '5544XXXXXXXX';
+```
+
+**Comandos que o promoter usa no grupo:** `Número - Nome` (reserva) e
+`Número - cancelar` (só cancela reserva de origem `promoter`; reserva feita pelo
+cliente é protegida, a menos que o remetente esteja em `GRUPO_ADMIN_TELEFONES`).
+Ver `[[project_hub_reservas_mesas]]`.
+
+## 6. Links de rastreio
+
+O formulário lê **`utm_source`** da URL (`sexta/index.html` linha ~327:
+`_params.get('utm_source')`) e manda no payload como `promoter`; o `_worker.js`
+grava em `butiquim_cadastros.promoter` / `promoter_origem`.
+
+Padrão em uso:
+
+```
+https://obutiquim.com.br/{rota}/?utm_source={slug}&utm_medium=whatsapp&utm_campaign={dia}
+```
+
+| Dia | Rota viva | Alias |
+|---|---|---|
+| Quarta | `/quarta/` | `{slug}-lista-quarta` |
+| Quinta | `/quinta/` | `{slug}-lista-quinta` |
+| Sexta | `/sexta-feira/` | `{slug}-lista-sexta` |
+| Sábado | `/sabado/` | `{slug}-lista-sabado` |
+| Domingo | `/domingo/` | `{slug}-lista-domingo` |
+| Véspera | `/feriado/` | `{slug}-lista-vespera` |
+
+`/sexta/` e `/vespera/` existem só como página de redirect JS (preservam a query);
+`/quarta-feira/` e `/quinta-feira/` **não existem mais** — link antigo assim cai
+na home e perde o cadastro e o rastreio (bug real corrigido em 01/08/2026).
+
+Encurtadores, tokens e pegadinhas: `[[reference_encurtadores_butiquim]]`.
+Resumo: TinyURL é o principal (alias com hífen funciona no grátis, pacing 2,5s)
+e **não deixa editar nem apagar alias** — link errado só se conserta criando um
+`-v2`. Bitly pelo MCP (`mcp__claude_ai_Bitly__bitly_create_short_link`) funciona,
+mas a cota grátis estoura em ~15 links/mês. Planilha-fonte:
+`Downloads\Gerador-Links-UTM-Butiquim.xlsx`.
+
+## 7. Disputa / placar — `butiquim_social_config.disputa_promoters`
+
+```sql
+create table butiquim_social_config ( chave text primary key, valor text not null );
+```
+
+`valor` é **JSON dentro de texto**. O receptor de menções
+(`butiquim-social/workflows/butiquim_disputa_receptor_mencoes.json`) faz
+`JSON.parse(cfg.disputa_promoters)` e resolve
+`promoter_slug = mapa[ig_username.toLowerCase()]`; quem não está no mapa fica
+com `promoter_slug: null` (a menção é guardada como alcance orgânico, mas não
+pontua pra ninguém). O placar (`butiquim_disputa_placar`, diário 18h) usa esse
+slug + os cadastros da lista.
+
+```sql
+-- ler
+select valor from butiquim_social_config where chave = 'disputa_promoters';
+-- adicionar
+update butiquim_social_config
+set valor = (valor::jsonb || '{"instagram":"slug"}'::jsonb)::text
+where chave = 'disputa_promoters';
+-- remover
+update butiquim_social_config
+set valor = (valor::jsonb - 'instagram')::text
+where chave = 'disputa_promoters';
+```
+
+Gate `disputa_lancada` ('true' hoje) controla se os promoters veem as mensagens
+da disputa. Regras e níveis de bônus: `butiquim-social/estudio/MUDANCAS-19-08-AVISOS.md`.
+
+## 8. Kim (Prontto.AI) — sem API nesta skill
+
+A lista de promoters oficiais da Kim vive **dentro do prompt**, que o Rafa cola
+à mão no painel da Prontto. Arquivo-fonte:
+`Downloads\O Butiquim - Materiais\09 - Documentos e Diversos\PROMPT-AGENTE-Kim-Butiquim-PRONTTO-v2-*.md`.
+**Não tente editar o agente por API.** Atualize o arquivo (se existir) e avise
+o Rafa, em texto explícito, que ele precisa recolar. Ver
+`[[project_butiquim_prontto_disparos]]`.
