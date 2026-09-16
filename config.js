@@ -6,7 +6,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   return {
     titulo: 'O Butiquim - Maringá/PR',
-    destaque: { tag: '#NÃOTEMERRO ✅', texto: '19 anos criando histórias e colocando a culpa no ar condicionado!' },
+    destaque: { tag: '#NÃOTEMERRO ✅', texto: '21 anos criando histórias e colocando a culpa no ar condicionado!' },
 
     social: [
       { icone: 'tiktok', url: 'https://bit.ly/TIKTOKBUTICA' },
