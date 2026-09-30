@@ -5,9 +5,20 @@
 // como Worker, a gente controla o Cache-Control da resposta e desliga o cache de
 // subrequest (cf.cacheTtl=0), então uma mudança em config.js fica visível na hora.
 //
-// Uso: node scripts/deploy-worker-proxy.mjs <cloudflare_oauth_token>
+// Uso: node scripts/deploy-worker-proxy.mjs [cloudflare_oauth_token]
+// Sem argumento, lê o oauth_token do wrangler (renove antes com butiquim-lista/renova-token.mjs).
 
-const TOKEN = process.argv[2];
+import { readFileSync } from "node:fs";
+
+function tokenDoWrangler() {
+  try {
+    return readFileSync("C:/Users/User/.wrangler/config/default.toml", "utf8").match(/oauth_token\s*=\s*"([^"]+)"/)[1];
+  } catch {
+    return null;
+  }
+}
+
+const TOKEN = process.argv[2] || tokenDoWrangler();
 if (!TOKEN) {
   console.error("Uso: node deploy-worker-proxy.mjs <token>");
   process.exit(1);
@@ -37,6 +48,13 @@ const REDIRECTS = {
 
 async function handleRequest(request) {
   const url = new URL(request.url);
+
+  // /vagas/<cargo> (29/09/2026): formulário exclusivo de uma vaga, servido pelo SITE
+  // no domínio do bar (butiquim-site/_worker.js, lista FORMULARIOS_QG). fetch(request)
+  // sai desta rota e cai na origem, que é o Pages do site.
+  if (url.pathname.startsWith('/vagas/') && url.pathname.length > '/vagas/'.length) {
+    return fetch(request);
+  }
 
   for (const [prefixo, destino] of Object.entries(REDIRECTS)) {
     if (url.pathname === prefixo || url.pathname === prefixo + '/') {
