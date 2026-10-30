@@ -332,14 +332,18 @@ o prompt não muda. **Não existe caminho de API** — faça:
    cliente chama · WhatsApp · desde) e gere a página "Copiar" (modelo:
    `COPIAR-prompt-Kim-2026-10-30.html`; cópia no Drive `02 O Butiquim\Agente
    Kim - prompts\`). Abra no Chrome com o link codificado.
-2. **Avise o Rafa, em texto explícito**, que ele precisa colar o documento no
-   painel (substituir o conteúdo de `promoters-oficiais`) — senão a Kim segue
-   com o time antigo.
-3. Se o PROMPT precisar mudar por outro motivo, a fonte de verdade é o **prompt
-   AO VIVO no painel**, não o Drive nem o `.md` de Downloads (em 30/10 o Drive
-   estava 4 dias atrasado e teria revertido ~40 linhas). Puxe pelo Chrome do Rafa
-   (`/api/agents/definitions/{id}` → `settings.system_prompt`), compare dentro da
-   página e prove com hash — receita em `[[aprendizado_prontto_prompt_vivo_vs_arquivo]]`.
+2. **Atualize o documento no painel pelo Chrome do Rafa** (app.prontto.ai →
+   operando como 🟢 O Butiquim → Base de Conhecimento → card `promoters-oficiais`
+   → editar "O que o bot lê" → Salvar; o vínculo com "O Butiquim - Kim - OFICIAL"
+   já existe). Foi assim em 30/10 (criado via "Escrever texto" + checkbox do
+   agente). Depois **avise o Rafa** do que mudou.
+3. 🚨 **O PROMPT da Kim é do sócio do Rafa (desde 30/10/2026) — NÃO mexa nem
+   peça pra recolar** (`[[feedback_kim_prompt_socio_cuida]]`). Se a mudança
+   exigir prompt (ex.: o item 23 ainda lista 5 nomes com "só confirme quem está
+   nesta lista"), entregue ao Rafa o **diff exato** conferido contra o prompt AO
+   VIVO do painel — nunca contra o Drive/Downloads, que atrasam (em 30/10 o
+   Drive estava 4 dias e ~40 linhas atrás). Receita de puxar o ao vivo e provar
+   com hash: `[[aprendizado_prontto_prompt_vivo_vs_arquivo]]`.
 
 ### [ ] 9. Registrar
 
