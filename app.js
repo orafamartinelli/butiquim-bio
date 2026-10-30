@@ -65,6 +65,12 @@
     html += `<div class="bloco-temp"><div class="mini">${esc(b.titulo)}</div><div class="sub">${esc(b.subtitulo)}</div>${botao(b.url, b.botao, '', 'star')}</div>`;
   }
 
+  // Listas ANTES dos promoters (Rafa 30/10/2026): o cadastro na lista é o primeiro botão que a pessoa vê.
+  html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.listasTitulo)}</div><div class="grande">${esc(CONFIG.listasSubtitulo)}</div></div>`;
+  html += `<div class="grupo-listas">`;
+  for (const l of CONFIG.listas) html += botao(l.url, l.rotulo, l.sub, 'star');
+  html += `</div>`;
+
   const dadosQualificacao = await promessaQualificacao;
   const elegiveis = Rotacao.filtraQualificados(CONFIG.promoters.filter((p) => p.telefone), dadosQualificacao, agora, Q);
   if (regraLigada) console.info('bio: qualificação da semana', { corte: new Date(Rotacao.corteSemana(agora)).toISOString(), dados: dadosQualificacao, mostrando: elegiveis.map((p) => p.slug || p.nome) });
@@ -79,11 +85,6 @@
     }
     html += `</section>`;
   }
-
-  html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.listasTitulo)}</div><div class="grande">${esc(CONFIG.listasSubtitulo)}</div></div>`;
-  html += `<div class="grupo-listas">`;
-  for (const l of CONFIG.listas) html += botao(l.url, l.rotulo, l.sub, 'star');
-  html += `</div>`;
 
   const fotos = CONFIG.carrossel || [];
   if (fotos.length) {
