@@ -335,9 +335,11 @@ o prompt não muda. **Não existe caminho de API** — faça:
 2. **Avise o Rafa, em texto explícito**, que ele precisa colar o documento no
    painel (substituir o conteúdo de `promoters-oficiais`) — senão a Kim segue
    com o time antigo.
-3. Se o PROMPT precisar mudar por outro motivo, a versão mais nova é sempre o
-   último `kim-colar-prontto-*.html` do Drive (não o `.md` de Downloads, que
-   atrasa).
+3. Se o PROMPT precisar mudar por outro motivo, a fonte de verdade é o **prompt
+   AO VIVO no painel**, não o Drive nem o `.md` de Downloads (em 30/10 o Drive
+   estava 4 dias atrasado e teria revertido ~40 linhas). Puxe pelo Chrome do Rafa
+   (`/api/agents/definitions/{id}` → `settings.system_prompt`), compare dentro da
+   página e prove com hash — receita em `[[aprendizado_prontto_prompt_vivo_vs_arquivo]]`.
 
 ### [ ] 9. Registrar
 
