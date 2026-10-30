@@ -7,7 +7,7 @@ description: Adiciona ou remove um promoter do ecossistema O Butiquim (bio, list
 
 ## O que este playbook resolve
 
-Um promoter "existe" em **7 lugares que não se falam entre si**. Toda vez que
+Um promoter "existe" em **11 lugares que não se falam entre si**. Toda vez que
 entra ou sai alguém, todos precisam ser tocados ou a pessoa fica "meio dentro"
 (o caso clássico: aparece na bio, traz cadastro, e o cadastro cai como "Casa"
 no fechamento — ela trabalha de graça).
@@ -16,15 +16,24 @@ no fechamento — ela trabalha de graça).
 |---|---|---|
 | 1 | Bio (`obutiquim.com.br/bio/`) | `butiquim-bio/config.js` |
 | 2 | Lista — roteamento de comissão | `butiquim-lista/_worker.js` (`PROMOTERS_OFICIAIS`) |
-| 3 | Lista — conferência/fechamento | `butiquim-lista/listasbutiquim/conferencia/index.html` (mesma constante) |
+| 3 | Lista — conferência/fechamento | `butiquim-lista/listasbutiquim/conferencia/index.html` (mesma constante + `NOME_PROMOTER`) |
 | 4 | Grupos de WhatsApp | time, placar e os 4 grupos de reserva de mesa |
 | 5 | Hub Reservas | tabela `hub_grupo_remetentes` (quem pode lançar mesa pelo grupo) |
-| 6 | Links de rastreio | TinyURL/Bitly `{promoter}-lista-{dia}` → UTM da lista |
+| 6 | Links de rastreio | TinyURL `{promoter}-lista-{dia}` (+ ulvis `{promoter}lista{dia}`) → UTM da lista; planilha-fonte em `Downloads\O Butiquim - Materiais\09 - Documentos e Diversos\Gerador-Links-UTM-Butiquim.xlsx` |
 | 7 | Disputa/placar | `butiquim_social_config` chave `disputa_promoters` (mapa de @) |
+| 7b | Relatório diário do Promoter por 1 dia | `butiquim-reguas/relatorio-promoter-dia.mjs` (`PROMOTERS_OFICIAIS`; fora da lista = conta como casa) |
+| 7c | Robôs n8n da disputa e dos avisos | `butiquim_disputa_placar`, `butiquim_disputa_aviso_time`, `butiquim_promoters_aviso_cadastro` (SQL `in (...)` + mapas `NOMES`/`OFICIAIS`) e os espelhos em `butiquim-social/workflows/*.json` |
+| 7d | Telefone pro DM de cadastros | `butiquim_social_config` chave `promoter_fones` (slug → `{fone, nome}`) — sem ele o robô 12h30/20h30 pula o promoter |
+| 8 | Kim (Prontto.AI) | documento **`promoters-oficiais`** da BASE DE CONHECIMENTO (desde 30/10/2026; antes vivia no prompt) |
 
-Mais um passo que **não é automatizável**: a Kim (agente da Prontto.AI) conhece
-os promoters pelo **prompt que só o Rafa cola no painel da Prontto**. A skill
-apenas LEMBRA de avisar.
+Os 4 itens 7b–7d e 8 foram descobertos em 30/10/2026 (entrada da Anny) com um
+`grep -ril medina` nos repos `butiquim-*` e `qg` — **repita esse grep com um slug
+atual antes de confiar nesta tabela**: lista fixa nova aparece sem avisar.
+
+O item 8 **não é automatizável**: a Kim lê os promoters do documento
+`promoters-oficiais` que só o Rafa cola no painel da Prontto. A skill gera o
+documento atualizado + página "Copiar" e avisa — o prompt não muda mais por
+causa de promoter.
 
 > ⚠️ **NicoChat foi DESLIGADO em 06/09/2026 e a conta encerrada.** Não existe
 > mais cadeia de condições UTM, randomizer orgânico, nós "Cliente Mesa - X",
@@ -114,14 +123,18 @@ idênticos (já saíram dessincronizados uma vez e o Medina perdeu comissão):
 - `C:\Users\User\Documents\projetos\butiquim-lista\_worker.js` (~linha 23)
 - `C:\Users\User\Documents\projetos\butiquim-lista\listasbutiquim\conferencia\index.html` (~linha 255)
 
-Hoje (confira antes de editar):
+Hoje (confira antes de editar — 6 oficiais desde 30/10/2026):
 
 ```js
-const PROMOTERS_OFICIAIS = new Set(['gabriel','luana','luanabido','mari','mariajulia','medina']);
+const PROMOTERS_OFICIAIS = new Set(['gabriel','luanabido','mari','mariajulia','medina','anny']);
+const ALIAS_PROMOTER = { luana: 'luanabido' };   // apelido → slug canônico (nos 2 arquivos)
+const NOME_PROMOTER = { ..., anny: 'Anny' };     // só na conferência: slug → nome no ranking/certificado
 ```
 
-Adicione o slug novo **nos dois**. O match é exato e em minúsculo — se o
-promoter usa duas grafias (ex.: `luana` e `luanabido`), inclua as duas.
+Adicione o slug novo **nos dois** arquivos (e o nome de exibição em
+`NOME_PROMOTER`, na conferência). O match é exato e em minúsculo — grafia
+alternativa entra em `ALIAS_PROMOTER`, não como segundo slug (regra do Rafa
+22/10: `luana` é apelido de `luanabido`, histórico fica numa linha só).
 
 Publicar (lista):
 
@@ -173,6 +186,16 @@ Confirme com `group-metadata` depois de adicionar. Se o número entrar mas não
 aparecer, tente a outra grafia do telefone (com/sem o 9º dígito).
 **Nunca** adicione promoter no grupo "ADM e GERÊNCIA" (`120363291237972375-group`).
 
+⚠️ A instância por trás do conector (e do MCP local `z-api-whatsapp`) é a
+**central 554488097549** (`3E2312F915591042D6343274D0A2B459`), não o celular do
+Rafa. Se qualquer chamada devolver `400` seco, **antes de insistir** confira
+`GET /status` com o token do cofre (`.credentials\z-api-rafa-pessoal.json`):
+`connected:false` + "You are not connected." = a instância caiu e precisa de QR
+no painel da Z-API (aconteceu no meio da entrada da Anny, 30/10 ~18h). Nesse
+caso registre em `estado-atual.md` que os grupos ficaram sem conferência e peça
+ao Rafa pra conferir no celular (`autoInvite:true` manda convite quando não dá
+pra adicionar direto — a pessoa precisa aceitar).
+
 ### [ ] 5. Links de rastreio (6 por promoter)
 
 Padrão do destino (o form lê `utm_source` da URL e grava como promoter):
@@ -208,9 +231,18 @@ Encurtar em **TinyURL** (principal) e um backup:
   (custom back-half funciona no grátis, mas a **cota mensal estoura em ~15
   links/mês** — bom só como 3ª via).
 
-Depois: **teste cada link** (tem que dar 301 e abrir o formulário do dia certo)
-e registre na planilha `Downloads\Gerador-Links-UTM-Butiquim.xlsx` (abas
-"Gerador" e "Links Curtos"), que é a fonte de verdade dos links de todo mundo.
+Backup: **ulvis.net** (`https://ulvis.net/api.php?type=json&custom={slug}lista{dia}&url=...`,
+sem hífen; idempotente; dá "Spam detected!" sob rajada → pacing 2,5 s + retry
+6/12/18 s — na Anny levou ~5 min pros 6).
+
+Depois: **teste cada link** (HEAD com `redirect:'manual'` → 301/302 com
+`location` EXATAMENTE igual ao destino) e registre na planilha
+`Downloads\O Butiquim - Materiais\09 - Documentos e Diversos\Gerador-Links-UTM-Butiquim.xlsx`
+(abas "Gerador" = linha do promoter com os 6 links longos; "Links Curtos" = 6
+linhas TinyURL + ulvis + destino), que é a fonte de verdade dos links de todo
+mundo. Edite com **exceljs** (preserva estilo; `xlsx` perde) rodando com
+`NODE_PATH` do projeto que tem a lib — faça backup `.backup-DD-MM-AAAA.xlsx` ao
+lado e copie o resultado pro Drive `02 O Butiquim\Planilhas e controles\`.
 
 ### [ ] 6. Mandar os links pro próprio promoter
 
@@ -241,17 +273,66 @@ where chave = 'disputa_promoters';
 Chave = @ do Instagram **em minúsculo, sem @**; valor = o mesmo slug do
 `PROMOTERS_OFICIAIS`.
 
-### [ ] 8. Kim (Prontto.AI) — avisar o Rafa, não tentar por API
+### [ ] 7b. Relatório diário do Promoter por 1 dia — `butiquim-reguas`
 
-A Kim só conhece os promoters pelo **prompt colado no painel da Prontto**
-(número 0906, conta "O Butiquim - Atendimento"). **Não existe caminho de API
-nesta skill pra isso.** Faça duas coisas:
+`relatorio-promoter-dia.mjs` tem a MESMA constante `PROMOTERS_OFICIAIS` (quem
+não está nela conta como "casa" no relatório das 13h). Edite, `npm test`
+(109 testes), commit + push na `master` — o deploy é automático por GitHub
+Actions (`deploy.yml`), **mas só pros arquivos listados em `paths:`** — em
+30/10 o `relatorio-promoter-dia.mjs` não estava lá e o push não publicou nada;
+foi acrescentado junto com `promoter-dia.mjs`, `checar.mjs` e `fn-robo.mjs`.
+Confira com `gh run list -R orafamartinelli/butiquim-reguas -L 1` que o run
+disparou; se não, `gh workflow run deploy.yml -R ...` (publica o HEAD da
+master). Se o repo tiver alteração alheia não commitada (outra sessão), **não**
+faça `wrangler deploy` manual sem olhar o `git diff`: você publicaria o
+trabalho dos outros.
 
-1. Atualize o arquivo-fonte do prompt (`Downloads\O Butiquim - Materiais\
-   09 - Documentos e Diversos\PROMPT-AGENTE-Kim-Butiquim-PRONTTO-v2-*.md`),
-   se ele existir, com o nome + telefone do promoter na lista oficial.
-2. **Avise o Rafa, em texto explícito**, que ele precisa colar o prompt
-   atualizado no painel da Prontto — senão a Kim segue citando o time antigo.
+### [ ] 7c. Robôs n8n da disputa e dos avisos (3 workflows)
+
+| Workflow | id | Onde está a lista |
+|---|---|---|
+| `butiquim_disputa_placar` | `IcRnB4VEQNxlESuE` | nó `Dados` (SQL, 3×) + nó `Msg Placar` (`NOMES`) |
+| `butiquim_disputa_aviso_time` | `B4lH3cyEzKpnJJti` | nó `Dados` (SQL, 1×) + nó `Msg Consolidada` (`NOMES`) |
+| `butiquim_promoters_aviso_cadastro` | `M5J1HLgRDwG7mrEr` | nó `Cadastros Novos` (SQL, 2×) + nó `Monta e Envia DMs` (`OFICIAIS`) |
+
+Pelo MCP `n8n-mcp`, `n8n_update_partial_workflow` com `patchNodeField`:
+`{find:"'mariajulia','medina')", replace:"'mariajulia','medina','anny')", replaceAll:true}`
+no `parameters.query` e `{find:"gabriel:'Gabriel'}", replace:"gabriel:'Gabriel',anny:'Anny'}"}`
+no `parameters.jsCode` (no aviso_cadastro é o `Set([...])` de `OFICIAIS`). O
+update já publica (conferir com `mode:'active'`). Depois aplique o mesmo `sed`
+nos espelhos `butiquim-social/workflows/*.json` e faça commit + push (`main`;
+`git pull --rebase --autostash` antes — o repo costuma ter mudança alheia).
+`butiquim_placar_lista` NÃO tem lista fixa (não mexer).
+
+### [ ] 7d. Telefone pro DM — `promoter_fones`
+
+```sql
+update butiquim_social_config
+set valor = (valor::jsonb || '{"slug":{"fone":"5544XXXXXXXX","nome":"Fulano"}}'::jsonb)::text
+where chave = 'promoter_fones';
+```
+
+Mesmo formato de telefone da bio. Sem a entrada, o robô `aviso_cadastro`
+(12h30/20h30) pula o promoter em silêncio (`promoter_dm_ensaio = false`).
+
+### [ ] 8. Kim (Prontto.AI) — documento `promoters-oficiais` da base
+
+Desde 30/10/2026 a Kim NÃO tem mais a lista no prompt: os itens 23-25 do prompt
+apontam pro documento **`promoters-oficiais`** da base de conhecimento (conta
+"O Butiquim - Atendimento", 0906). Trocar promoter = regravar só esse documento;
+o prompt não muda. **Não existe caminho de API** — faça:
+
+1. Atualize o arquivo-fonte `Downloads\O Butiquim - Materiais\09 - Documentos e
+   Diversos\BASE-Kim-promoters-oficiais-AAAA-MM-DD.md` (tabela nome · como o
+   cliente chama · WhatsApp · desde) e gere a página "Copiar" (modelo:
+   `COPIAR-prompt-Kim-2026-10-30.html`; cópia no Drive `02 O Butiquim\Agente
+   Kim - prompts\`). Abra no Chrome com o link codificado.
+2. **Avise o Rafa, em texto explícito**, que ele precisa colar o documento no
+   painel (substituir o conteúdo de `promoters-oficiais`) — senão a Kim segue
+   com o time antigo.
+3. Se o PROMPT precisar mudar por outro motivo, a versão mais nova é sempre o
+   último `kim-colar-prontto-*.html` do Drive (não o `.md` de Downloads, que
+   atrasa).
 
 ### [ ] 9. Registrar
 
@@ -277,9 +358,13 @@ Mesma lista ao contrário, começando pelo que reduz exposição mais rápido:
 3. **[ ] Grupos de WhatsApp**: `group-remove-participant` nos grupos em que ela
    está (time, placar, grupos de mesa). Confira com `group-metadata`.
 4. **[ ] Disputa**: tirar o @ dela do mapa `disputa_promoters`
-   (`valor::jsonb - 'instagram_dela'`).
-5. **[ ] Prompt da Kim**: tirar o nome da lista oficial e **avisar o Rafa pra
-   recolar no painel da Prontto**.
+   (`valor::jsonb - 'instagram_dela'`) e do `promoter_fones`
+   (`valor::jsonb - 'slug'`).
+4b. **[ ] Relatório diário + 3 robôs n8n + espelhos** (passos 7b e 7c ao
+   contrário): tirar o slug das listas. Se ficar, cadastro antigo dela segue
+   contando como promoter nos placares.
+5. **[ ] Documento `promoters-oficiais` da Kim**: tirar a linha dela, gerar a
+   página "Copiar" e **avisar o Rafa pra recolar na base da Prontto**.
 6. **[ ] `hub_grupo_remetentes`: NÃO apagar** se ela já lançou mesa — é
    histórico/auditoria e não atrapalha (a Nicolly ficou assim). Apague só se
    ela nunca operou (caso Aiko).
@@ -296,10 +381,15 @@ Mesma lista ao contrário, começando pelo que reduz exposição mais rápido:
 - [ ] `https://obutiquim.com.br/bio/` mostra (ou não mostra) a pessoa.
 - [ ] Um cadastro de teste pelo link dela aparece com o promoter certo em
       `https://orafamartinelli.com.br/listasbutiquim/conferencia/` — não como "Casa".
-- [ ] `group-metadata` confirma entrada/saída dos grupos.
+- [ ] `group-metadata` confirma entrada/saída dos grupos (instância conectada!).
 - [ ] `select * from hub_grupo_remetentes where estab_id = '8f249842-...'`
       mostra o estado esperado.
-- [ ] Rafa avisado sobre o prompt da Kim.
+- [ ] `grep -c anny` (ou o slug) nos 3 workflows do n8n (`mode:'active'`) e no
+      `relatorio-promoter-dia.mjs` do repo publicado.
+- [ ] O cadastro de teste foi "aposentado": `dia_semana='TESTE'`,
+      `promoter_avisado_em=now()`, `created_at='2026-01-01'` — senão o robô
+      das 20h30 manda DM pro promoter contando o teste como cadastro real.
+- [ ] Rafa avisado sobre o documento `promoters-oficiais` da Kim.
 
 Relacionado: [[project_promoters_butiquim]], [[project_butiquim_bio]],
 [[project_hub_reservas_mesas]], [[reference_encurtadores_butiquim]],

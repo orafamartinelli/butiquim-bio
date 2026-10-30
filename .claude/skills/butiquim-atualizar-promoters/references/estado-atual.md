@@ -1,29 +1,33 @@
 # Estado atual dos promoters (doc vivo — atualizar a cada execução da skill)
 
-Última reverificação: **16/09/2026** (código + banco conferidos).
+Última reverificação: **30/10/2026** (entrada da Anny — código, banco, n8n conferidos).
 
-## Roster ativo
+## Roster ativo (6 oficiais)
 
 | Nome | Slug (`utm_source`) | Telefone (bio / `hub_grupo_remetentes`) | @ Instagram (disputa) | Bio | Disputa |
 |---|---|---|---|---|---|
-| Luana Bido | `luanabido` (e `luana`) | 554498766957 | luanabido | ativa, giro | sim |
+| Luana Bido | `luanabido` (`luana` = alias) | 554498766957 | luanabido | ativa, giro | sim |
 | Mari (Mariana Zalasko) | `mari` | 554497077075 | m.zalasko | ativa, giro | sim |
 | Maria Julia | `mariajulia` | 554498708463 | mari_juu_l | ativa, giro | sim |
-| Medina | `medina` | 554491055861 | edaimedina | ativo, giro | sim |
+| Medina (Jean Medina) | `medina` | 554491055861 | edaimedina | ativo, giro | sim |
+| Anny (Anny Candida) | `anny` | 554499607128 | annycandida | ativa, giro (desde 30/10) | sim |
 | Gabriel | `gabriel` | 554491749173 | gabrieellgoncalves | ativo, `fixoNoFinal` | sim |
 
 Também em `hub_grupo_remetentes` (não são promoters de lista — **não mexer por
 esta skill**): André `554484210698`, Victor `554491475649`, Rafa `554484232574`
 e `5544984232574`, Nicolly `554488274796` (saiu do time em 27/07/2026; a linha
-ficou por histórico de comissão).
+ficou por histórico de comissão). A Anny está lá como "Anny Candida" (iniciais AC).
 
 Mapa `disputa_promoters` no banco hoje:
-`{"luanabido":"luanabido","m.zalasko":"mari","mari_juu_l":"mariajulia","edaimedina":"medina","gabrieellgoncalves":"gabriel","orafamartinelli":"rafa"}`
+`{"luanabido":"luanabido","m.zalasko":"mari","mari_juu_l":"mariajulia","edaimedina":"medina","gabrieellgoncalves":"gabriel","annycandida":"anny","orafamartinelli":"rafa"}`
 (o `orafamartinelli` está fora da competição, é só identificação). Gate
-`disputa_lancada = true`.
+`disputa_lancada = true`. `promoter_fones` tem os 6 (slug → fone/nome).
 
-`PROMOTERS_OFICIAIS` (idêntica nos 2 arquivos, conferido 16/09):
-`['gabriel','luana','luanabido','mari','mariajulia','medina']`.
+`PROMOTERS_OFICIAIS` (idêntica em `_worker.js`, `conferencia/index.html` e
+`butiquim-reguas/relatorio-promoter-dia.mjs`, conferido 30/10):
+`['gabriel','luanabido','mari','mariajulia','medina','anny']` + `ALIAS_PROMOTER {luana→luanabido}`.
+Mesma lista (com `'luana'` junto) nos 3 workflows n8n (`placar`, `aviso_time`,
+`aviso_cadastro`) e nos espelhos de `butiquim-social/workflows/`.
 
 ## Mudança estrutural — NicoChat desligado (06/09/2026)
 
@@ -45,8 +49,10 @@ Hoje:
   pessoal, independentemente da origem (decisão do Rafa junto com o
   desligamento: o promoter não ganha a mais por fazer a reserva e o cliente não
   pode ficar esperando resposta; a comissão segue carimbada no cadastro).
-- **A Kim conhece os promoters só pelo prompt** que o Rafa cola no painel —
-  promoter novo ou removido exige que ele recole. Não há API para isso.
+- **A Kim conhece os promoters pelo documento `promoters-oficiais` da base de
+  conhecimento** (desde 30/10/2026, pedido do Rafa: "pra facilitar a troca e
+  evitar mexer no prompt"). Os itens 23-25 do prompt v5 só apontam pro
+  documento. Promoter novo ou removido = Rafa recola SÓ o documento. Não há API.
 
 ## Histórico que ainda importa
 
@@ -73,13 +79,41 @@ Hoje:
   `butiquim_social_disputa_eventos`, mapa `disputa_promoters`. Promoter novo que
   não entra no mapa não pontua.
 
+- **19/10/2026 — nome de exibição**: `conferencia/index.html` ganhou
+  `NOME_PROMOTER` (slug → nome real no ranking/certificado) e `ALIAS_PROMOTER`
+  (`luana` → `luanabido`). Promoter novo = acrescentar nos dois, junto com o
+  `PROMOTERS_OFICIAIS`. O ranking de segunda passou a ir pro grupo TIME BUTICA.
+
+- **30/10/2026 — Anny Candida entrou** (`anny`, 554499607128, @annycandida; giro
+  da bio, mesas, disputa, tudo de uma vez). Feito na sessão: bio (deploy),
+  `PROMOTERS_OFICIAIS` + `NOME_PROMOTER` (deploy lista), `hub_grupo_remetentes`,
+  6 TinyURL + 6 ulvis testados e mandados pro WhatsApp dela (17h58), planilha
+  (linha 12 do Gerador, linhas 41-46 dos Links Curtos; cópia no Drive),
+  `disputa_promoters`, `promoter_fones`, `relatorio-promoter-dia.mjs` (push →
+  GH Actions), 3 workflows n8n (publicados) + espelhos, cadastro de teste OK
+  (promoter `anny`, não "Casa"; aposentado como TESTE). **Descobertas que viraram
+  passos 7b–7d e 8 da SKILL.md**: 4 listas fixas fora da tabela antiga; prompt
+  mais novo da Kim era o v4 de 25/10 no Drive (o .md de Downloads estava em
+  22/10); promoters saíram do prompt → documento `promoters-oficiais`.
+  **Z-API central caiu ~18h00 no meio dos grupos** (`connected:false`): os 6
+  `group-add-participant` devolveram `true` às 17h57, mas não deu pra conferir
+  com `group-metadata`.
+
 ## Pendências abertas
 
-- Nenhuma entrada/saída de promoter pendente nesta data.
+- **Anny — conferir no celular se entrou nos 6 grupos** (TIME BUTICA, Placar,
+  Reservas quinta/sexta/sábado/domingo) assim que a Z-API central reconectar
+  (QR no painel). Se não entrou, repetir o passo 4.
+- **Rafa colar na Prontto (30/10):** documento `promoters-oficiais` na base +
+  prompt v5 (página `COPIAR-prompt-Kim-2026-10-30.html`).
 - Item antigo ainda sem resposta (`[[project_promoters_butiquim]]`, fila de
   03/08): conferir se os links curtos antigos de todos os promoters ainda
   respondem depois das mudanças de domínio/rota — link quebrado = promoter
   perdendo comissão sem saber.
+- Regra nova pedida pelo Rafa em 30/10 (ainda não construída): promoter só entra
+  no giro da bio da semana seguinte se na semana teve cadastro pelo link OU
+  marcou/repostou o bar. Exige fonte de dados semanal na bio (hoje `rotacao.js`
+  é só round-robin estático) — ver `[[project_butiquim_bio]]`.
 
 ## Como registrar a próxima execução
 

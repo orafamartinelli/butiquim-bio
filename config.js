@@ -22,6 +22,7 @@
       { nome: 'Mari', telefone: '554497077075', ativo: true },
       { nome: 'Maria Julia', telefone: '554498708463', ativo: true },
       { nome: 'Medina', telefone: '554491055861', ativo: true },
+      { nome: 'Anny', telefone: '554499607128', ativo: true },
       { nome: 'Gabriel', telefone: '554491749173', ativo: true, fixoNoFinal: true },
     ],
     promotersTitulo: 'FALE COM UM PROMOTER 👇',
