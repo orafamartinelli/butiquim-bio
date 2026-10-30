@@ -90,9 +90,14 @@ Adicione no array `promoters`, na posição combinada (antes do Gabriel, que é
 `fixoNoFinal`):
 
 ```js
-{ nome: 'Fulano', telefone: '5544XXXXXXXX', ativo: true },
+{ nome: 'Fulano', slug: 'fulano', desde: 'AAAA-MM-DD', telefone: '5544XXXXXXXX', ativo: true },
 ```
 
+- `slug` = o mesmo `utm_source`/`PROMOTERS_OFICIAIS` — é como a **regra de qualificação
+  semanal** (desde 02/11/2026, `CONFIG.qualificacao`) reconhece a pessoa na resposta de
+  `lista.obutiquim.com.br/api/bio/promoters`. `desde` = data de entrada: dá a **carência
+  de 1 semana** (sem `desde`, promoter novo sem cadastro some da bio já na 1ª segunda).
+  Regra completa em `[[project_butiquim_bio]]`.
 - `telefone` = **55 + DDD + número, sem "+"** (formato 2 do checklist).
 - `fixoNoFinal: true` só se ele NÃO entra no giro semanal.
 - O giro é round-robin semanal calculado em `rotacao.js` (vira **segunda 05:00

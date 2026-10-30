@@ -17,17 +17,35 @@
 
     // telefone: E.164 sem "+" (ex: "5544984232574"). Vazio = fora da rotação.
     // fixoNoFinal: true = não entra no giro semanal, fica sempre no fim da lista.
+    // slug: o mesmo utm_source dos links/PROMOTERS_OFICIAIS da lista (é como a regra de
+    //   qualificação reconhece o promoter). desde: data de entrada (AAAA-MM-DD) — carência.
     promoters: [
-      { nome: 'Luana Bido', telefone: '554498766957', ativo: true },
-      { nome: 'Mari', telefone: '554497077075', ativo: true },
-      { nome: 'Maria Julia', telefone: '554498708463', ativo: true },
-      { nome: 'Medina', telefone: '554491055861', ativo: true },
-      { nome: 'Anny', telefone: '554499607128', ativo: true },
-      { nome: 'Gabriel', telefone: '554491749173', ativo: true, fixoNoFinal: true },
+      { nome: 'Luana Bido', slug: 'luanabido', desde: '2025-12-31', telefone: '554498766957', ativo: true },
+      { nome: 'Mari', slug: 'mari', desde: '2025-12-31', telefone: '554497077075', ativo: true },
+      { nome: 'Maria Julia', slug: 'mariajulia', desde: '2025-12-31', telefone: '554498708463', ativo: true },
+      { nome: 'Medina', slug: 'medina', desde: '2026-07-30', telefone: '554491055861', ativo: true },
+      { nome: 'Anny', slug: 'anny', desde: '2026-10-30', telefone: '554499607128', ativo: true },
+      { nome: 'Gabriel', slug: 'gabriel', desde: '2025-12-31', telefone: '554491749173', ativo: true, fixoNoFinal: true },
     ],
     promotersTitulo: 'FALE COM UM PROMOTER 👇',
     promotersSubtitulo: 'Reserve a sua mesa!',
     mensagemPromoter: 'Oi {nome}! Vim pela bio do Butiquim 🍺',
+
+    // Regra de qualificação semanal (Rafa 30/10/2026): só entra na bio da semana quem, na semana
+    // que fechou (segunda 05h → segunda 05h), teve cadastro pelo link OU marcou/repostou o
+    // @obutiquim. Promoter com menos de `carenciaDias` de casa (campo `desde`) entra sem avaliação.
+    // Se ninguém qualificar, ficam só os 2 melhores em cadastros do mês atual (ou do anterior, se o
+    // atual ainda não tem 2). Gabriel entra na regra como todo mundo; se qualificar, segue fixo no
+    // final. Fonte: GET lista.obutiquim.com.br/api/bio/promoters (butiquim-lista/bio-promoters.mjs).
+    // API fora do ar ou lenta (> timeoutMs) = mostra todo mundo, como antes — nunca fica vazia.
+    // Desligar a regra: ativa:false. Simular outra data: ?debugData=AAAA-MM-DD na URL da bio.
+    qualificacao: {
+      ativa: true,
+      valeDesde: '2026-11-02T05:00:00-03:00',
+      api: 'https://lista.obutiquim.com.br/api/bio/promoters',
+      carenciaDias: 7,
+      timeoutMs: 3000,
+    },
 
     // Blocos temporários — somem sozinhos fora da janela (datas em -03:00).
     blocosTemporarios: [

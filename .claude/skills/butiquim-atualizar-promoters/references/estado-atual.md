@@ -113,10 +113,13 @@ Hoje:
   03/08): conferir se os links curtos antigos de todos os promoters ainda
   respondem depois das mudanças de domínio/rota — link quebrado = promoter
   perdendo comissão sem saber.
-- Regra nova pedida pelo Rafa em 30/10 (ainda não construída): promoter só entra
-  no giro da bio da semana seguinte se na semana teve cadastro pelo link OU
-  marcou/repostou o bar. Exige fonte de dados semanal na bio (hoje `rotacao.js`
-  é só round-robin estático) — ver `[[project_butiquim_bio]]`.
+- ✅ 30/10 19h — **regra de qualificação semanal da bio NO AR** (vale a partir
+  da virada de seg 02/11 05h): só aparece quem teve cadastro pelo link OU
+  marcação/repost na semana que fechou; carência de 7 dias pelo `desde`; ninguém
+  → 2 melhores do mês; Gabriel na regra. Fonte: `butiquim-lista/bio-promoters.mjs`
+  + `GET /api/bio/promoters`; filtro em `rotacao.js` (`filtraQualificados`).
+  Detalhes e como desligar em `[[project_butiquim_bio]]`. **Pendente:** Rafa
+  avisar o time (quem não tiver cadastro na semana some da bio).
 
 ## Como registrar a próxima execução
 

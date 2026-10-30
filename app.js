@@ -1,5 +1,5 @@
 // Butiquim Bio — renderização. Lê CONFIG (config.js) e Rotacao (rotacao.js).
-(function () {
+(async function () {
   const raiz = document.getElementById('pagina');
   const FALLBACK = '<p class="fallback">Ops, algo falhou ao carregar. Fale com a gente: <a href="https://instagram.com/obutiquim">@obutiquim</a></p>';
   if (typeof CONFIG === 'undefined' || typeof Rotacao === 'undefined') {
@@ -10,6 +10,29 @@
 
   const debug = Rotacao.parseDebugData(new URLSearchParams(location.search).get('debugData'));
   const agora = debug !== null ? debug : Date.now();
+
+  // Regra de qualificação semanal (Rafa 30/10/2026, ver CONFIG.qualificacao): pergunta à lista quem
+  // qualificou pra esta semana. A busca começa agora e só é esperada na hora de montar os promoters.
+  // Qualquer falha (rede, timeout, resposta estranha) devolve null → a bio mostra todo mundo.
+  async function buscaQualificacao(cfg, agoraDebugMs) {
+    if (location.protocol === 'file:') return null; // teste de render local (Playwright), sem rede
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), cfg.timeoutMs || 3000);
+      const u = new URL(cfg.api);
+      if (agoraDebugMs !== null) u.searchParams.set('agora', new Date(agoraDebugMs).toISOString());
+      const r = await fetch(u.toString(), { signal: ctrl.signal, cache: 'no-store' });
+      clearTimeout(timer);
+      if (!r.ok) return null;
+      return await r.json();
+    } catch (e) {
+      console.warn('bio: qualificação indisponível, mostrando todos os promoters', e);
+      return null;
+    }
+  }
+  const Q = CONFIG.qualificacao || {};
+  const regraLigada = !!Q.ativa && (!Q.valeDesde || agora >= Date.parse(Q.valeDesde));
+  const promessaQualificacao = regraLigada ? buscaQualificacao(Q, debug !== null ? agora : null) : Promise.resolve(null);
 
   const ICONES = {
     tiktok: '<svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.59-2.59c.27 0 .53.04.77.12V9.77a5.76 5.76 0 0 0-.77-.05 5.66 5.66 0 1 0 5.66 5.66V9.01a7.32 7.32 0 0 0 4.28 1.37V7.29a4.28 4.28 0 0 1-3.2-1.47z"/></svg>',
@@ -42,7 +65,10 @@
     html += `<div class="bloco-temp"><div class="mini">${esc(b.titulo)}</div><div class="sub">${esc(b.subtitulo)}</div>${botao(b.url, b.botao, '', 'star')}</div>`;
   }
 
-  const rotacionados = Rotacao.ordemRotacao(CONFIG.promoters.filter((p) => p.telefone), agora);
+  const dadosQualificacao = await promessaQualificacao;
+  const elegiveis = Rotacao.filtraQualificados(CONFIG.promoters.filter((p) => p.telefone), dadosQualificacao, agora, Q);
+  if (regraLigada) console.info('bio: qualificação da semana', { corte: new Date(Rotacao.corteSemana(agora)).toISOString(), dados: dadosQualificacao, mostrando: elegiveis.map((p) => p.slug || p.nome) });
+  const rotacionados = Rotacao.ordemRotacao(elegiveis, agora);
   if (rotacionados.length) {
     html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.promotersTitulo)}</div><div class="grande">${esc(CONFIG.promotersSubtitulo)}</div></div>`;
     html += `<section id="promoters">`;

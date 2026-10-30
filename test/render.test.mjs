@@ -24,19 +24,27 @@ async function abre(query) {
   return page;
 }
 
-// semana 0 (época 05/01/2026): meninas na ordem do config, Gabriel fixo no fim
+// Roster desde 30/10/2026: 5 no giro (Luana Bido, Mari, Maria Julia, Medina, Anny) + Gabriel fixo no fim.
+// semana 0 (época 05/01/2026): giro na ordem do config, Gabriel fixo no fim
 let page = await abre('?debugData=2026-01-05T05:00');
 let nomes = await page.$$eval('#promoters .rotulo', (els) => els.map((e) => e.textContent));
-assert.deepEqual(nomes, ['Luana Bido', 'Mari', 'Maria Julia', 'Gabriel']);
+assert.deepEqual(nomes, ['Luana Bido', 'Mari', 'Maria Julia', 'Medina', 'Anny', 'Gabriel']);
 
-// semana seguinte: meninas giram 1, Gabriel continua no fim
+// semana seguinte: giro anda 1, Gabriel continua no fim
 page = await abre('?debugData=2026-01-12T05:00');
 nomes = await page.$$eval('#promoters .rotulo', (els) => els.map((e) => e.textContent));
-assert.deepEqual(nomes, ['Mari', 'Maria Julia', 'Luana Bido', 'Gabriel']);
+assert.deepEqual(nomes, ['Mari', 'Maria Julia', 'Medina', 'Anny', 'Luana Bido', 'Gabriel']);
 
 // wa.me com mensagem e primeiro nome (Mari é índice 1 no config)
 const href = await page.$eval('#promoters a', (a) => a.href);
 assert.match(href, /^https:\/\/wa\.me\/554400000001\?text=Oi%20Mari!/);
+
+// regra de qualificação semanal ligada (02/11/2026+): em file:// não há rede, então a bio tem que
+// cair no fail-open e mostrar todo mundo — a página nunca pode ficar sem promoters por erro técnico
+page = await abre('?debugData=2026-11-02T05:00');
+nomes = await page.$$eval('#promoters .rotulo', (els) => els.map((e) => e.textContent));
+assert.equal(nomes.length, 6, 'fail-open da qualificação: sem API, mostra os 6');
+assert.equal(nomes[nomes.length - 1], 'Gabriel');
 
 // bloco copa: visível dentro da janela, some depois
 page = await abre('?debugData=2026-07-03');
@@ -48,7 +56,8 @@ assert.equal(await page.locator('.bloco-temp').count(), 0);
 page = await abre('');
 const listas = await page.$$eval('a.botao', (as) => as.map((a) => a.href));
 assert.ok(listas.some((h) => h.includes('obutiquim.com.br/sexta-feira/?utm_source=Instagram')));
-assert.ok(listas.some((h) => h.includes('forms.gle/vn1Ypk3VLekEuwCU9')));
+assert.ok(listas.some((h) => h.includes('obutiquim.com.br/sabado/?utm_source=Instagram')));
+assert.ok(listas.some((h) => h.includes('obutiquim.com.br/domingo/?utm_source=Instagram')));
 // links úteis presentes (cardápio + achados e perdidos como amostra)
 assert.ok(listas.some((h) => h.includes('drive.google.com/file/d/1AkwMqIjLH_gcTKWuq96oDVP0RCGZabe8')));
 assert.ok(listas.some((h) => h.includes('api.whatsapp.com/send?phone=554498006859')));

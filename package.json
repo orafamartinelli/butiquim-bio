@@ -2,7 +2,7 @@
   "name": "butiquim-bio",
   "private": true,
   "scripts": {
-    "test": "node --test test/rotacao.test.mjs",
+    "test": "node --test test/rotacao.test.mjs test/qualificacao.test.mjs",
     "test:render": "node test/render.test.mjs",
     "deploy": "npx wrangler pages deploy . --project-name=butiquim-bio"
   },
