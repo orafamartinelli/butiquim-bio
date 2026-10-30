@@ -101,7 +101,9 @@ Hoje:
 
 ## Pendências abertas
 
-- ✅ 30/10 18h20 — Rafa conferiu os grupos ("fiz"). ✅ 30/10 18h30 — documento
+- ✅ 30/10 18h53 — grupos conferidos via API (Z-API voltou): Anny em **6/6**.
+  Na queda das 18h só 4 tinham entrado (TIME BUTICA, Placar, SEXTA, SÁBADO);
+  DOMINGO e QUINTA foram adicionados de novo às 18h52. ✅ 30/10 18h30 — documento
   `promoters-oficiais` CRIADO e VINCULADO à Kim pelo Chrome (painel →
   Base de Conhecimento → Escrever texto → marcar "O Butiquim - Kim - OFICIAL"
   em "Agentes que consultam este documento"; o vínculo salva sozinho).
