@@ -101,11 +101,14 @@ Hoje:
 
 ## Pendências abertas
 
-- **Anny — conferir no celular se entrou nos 6 grupos** (TIME BUTICA, Placar,
-  Reservas quinta/sexta/sábado/domingo) assim que a Z-API central reconectar
-  (QR no painel). Se não entrou, repetir o passo 4.
-- **Rafa colar na Prontto (30/10):** documento `promoters-oficiais` na base +
-  prompt v5 (página `COPIAR-prompt-Kim-2026-10-30.html`).
+- ✅ 30/10 18h20 — Rafa conferiu os grupos ("fiz"). ✅ 30/10 18h30 — documento
+  `promoters-oficiais` CRIADO e VINCULADO à Kim pelo Chrome (painel →
+  Base de Conhecimento → Escrever texto → marcar "O Butiquim - Kim - OFICIAL"
+  em "Agentes que consultam este documento"; o vínculo salva sozinho).
+  **Prompt NÃO foi trocado por decisão do Rafa** ("não mexa no prompt"): o v4
+  (25/10) ainda traz os 5 nomes no item 23 com "só confirme quem está nesta
+  lista" — enquanto o v5 (ponteiro pro documento) não for colado, a Kim pode
+  não confirmar a Anny. Página pronta: `COPIAR-prompt-Kim-2026-10-30.html`.
 - Item antigo ainda sem resposta (`[[project_promoters_butiquim]]`, fila de
   03/08): conferir se os links curtos antigos de todos os promoters ainda
   respondem depois das mudanças de domínio/rota — link quebrado = promoter
