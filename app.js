@@ -68,7 +68,13 @@
   // Listas ANTES dos promoters (Rafa 30/10/2026): o cadastro na lista é o primeiro botão que a pessoa vê.
   html += `<div class="secao-titulo"><div class="mini">${esc(CONFIG.listasTitulo)}</div><div class="grande">${esc(CONFIG.listasSubtitulo)}</div></div>`;
   html += `<div class="grupo-listas">`;
-  for (const l of CONFIG.listas) html += botao(l.url, l.rotulo, l.sub, 'star');
+  // Lista pode ter janela de data (visivelDe/visivelAte), igual aos blocos temporários — é como
+  // entram as noites avulsas (véspera de feriado etc.) sem ninguém precisar lembrar de tirar
+  // depois. Lista SEM data continua aparecendo sempre (Rafa 04/11/2026).
+  for (const l of CONFIG.listas) {
+    if (!Rotacao.blocoVisivel(l, agora)) continue;
+    html += botao(l.url, l.rotulo, l.sub, 'star');
+  }
   html += `</div>`;
 
   const dadosQualificacao = await promessaQualificacao;

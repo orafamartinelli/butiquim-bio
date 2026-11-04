@@ -76,7 +76,13 @@
 
     listasTitulo: 'CADASTRE-SE NA LISTA DO DIA 👇',
     listasSubtitulo: 'Garanta seu desconto!',
+    // Noite avulsa entra aqui com janela de data (visivelDe/visivelAte) e sai sozinha — mesma
+    // regra dos blocosTemporarios. Lista sem data = aparece sempre.
+    // 🎉 QUINTA 19/11/2026: véspera do feriado de 20/11 (Consciência Negra, numa sexta). Cai na
+    // página /feriado/, não na /quinta/, pra o cadastro entrar nos relatórios como "Feriado" e
+    // não se misturar com quinta comum. Sai sexta 20/11 às 9h (pega quem procura de madrugada).
     listas: [
+      { rotulo: 'LISTA DE QUINTA 19/11', sub: 'Véspera de feriado — garanta seu desconto', url: 'https://lista.obutiquim.com.br/feriado/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=VesperaFeriado1911', visivelDe: '2026-11-04T00:00:00-03:00', visivelAte: '2026-11-20T09:00:00-03:00' },
       { rotulo: 'LISTA DE SEXTA', sub: 'Garanta seu desconto', url: 'https://obutiquim.com.br/sexta-feira/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SextaOrganico' },
       { rotulo: 'LISTA DE SÁBADO', sub: 'Garanta seu desconto', url: 'https://obutiquim.com.br/sabado/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=SabadoOrganico' },
       { rotulo: 'LISTA DE DOMINGO', sub: 'Garanta seu desconto', url: 'https://www.obutiquim.com.br/domingo/?utm_source=Instagram&utm_medium=BioInsta&utm_campaign=DomingoOrganico' },
